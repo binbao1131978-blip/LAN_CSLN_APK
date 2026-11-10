@@ -1,0 +1,2763 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#14532d">
+<title>Lân_CSLN</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+:root{
+  --green:#14532d;
+  --purple:#6d28d9;
+  --yellow:#f2c230;
+  --red:#b91c1c;
+  --gray:#475569;
+  --border:#d1d5db;
+  --bg:#f1f5f9;
+}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
+header{
+  background:var(--green);color:white;text-align:center;
+  padding:14px;font-size:21px;font-weight:bold;
+  position:sticky;top:0;z-index:10
+}
+nav{
+  display:flex;gap:5px;padding:8px;background:white;
+  position:sticky;top:48px;z-index:9;overflow-x:auto;
+  flex-wrap:nowrap
+}
+nav button{
+  flex:1;min-width:75px;border:0;border-radius:7px;
+  padding:16px 5px;font-weight:bold;font-size:13px;min-height:52px
+}
+button{cursor:pointer}
+.green{background:var(--green);color:white}
+.purple{background:var(--purple);color:white}
+.yellow{background:var(--yellow);color:#222}
+.gray{background:var(--gray);color:white}
+.red{background:var(--red);color:white}
+.backup-purple{background:#8e1b6d;color:#fff}
+main{max-width:1400px;margin:auto;padding:10px}
+.panel{
+  background:white;padding:13px;border-radius:10px;
+  margin-bottom:12px;box-shadow:0 1px 4px #00000012
+}
+h3{margin:4px 0 12px;color:var(--green)}
+input,textarea,select{
+  width:100%;padding:11px;border:1px solid #cbd5e1;
+  border-radius:7px;margin:5px 0 10px;font-size:15px;background:white
+}
+textarea{min-height:180px;resize:vertical}
+label{font-size:14px;font-weight:bold}
+.action{
+  border:0;border-radius:7px;padding:10px 14px;
+  margin:4px 2px;font-weight:bold;font-size:14px
+}
+.small{padding:7px 10px;font-size:13px}
+.hidden{display:none!important}
+.row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1}
+.file-item{
+  border:1px solid var(--border);border-radius:8px;
+  padding:12px;margin:8px 0;display:flex;
+  align-items:center;justify-content:space-between;gap:8px
+}
+.file-name{font-weight:bold;overflow-wrap:anywhere}
+.status{font-size:12px;color:#64748b;margin-top:5px}
+.badge{
+  background:#dcfce7;color:#166534;border-radius:5px;
+  padding:4px 7px;font-size:12px
+}
+.hidden-badge{background:#fee2e2;color:#991b1b}
+.stat{
+  background:#ecfdf5;padding:14px;border-radius:8px;
+  font-weight:bold;color:var(--green)
+}
+.note{font-size:12px;color:#64748b;line-height:1.5}
+.instruction-help,.kc-note,.qdm-note{display:none!important}
+body.show-instruction-help .instruction-help,body.show-instruction-help .kc-note,body.show-instruction-help .qdm-note{display:block!important}
+.overview-heading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:42px;margin-bottom:8px;padding:0}
+.overview-title{text-align:center;width:100%;margin:4px 0 10px!important;font-size:2em!important;line-height:1.15}
+.overview-controls{display:flex;justify-content:center;align-items:center;flex:0 0 auto!important;gap:4px!important;width:100%}
+.overview-controls>*{flex:0 0 auto!important}
+.overview-help-row{display:flex;justify-content:center;margin:6px 0 12px}
+.overview-help-row button{min-width:110px}
+.overview-main-toggle{display:block;width:80%;max-width:620px;height:39px;margin:10px auto;background:#b87333;color:#fff;border:0;border-radius:9px;font-size:14px;font-weight:bold}
+#overviewDataContent.overview-expanded,#qdmOverview.overview-expanded{position:fixed;left:0;right:0;top:116px;bottom:0;z-index:21;overflow:auto;background:#f1f5f9;padding:10px 10px 24px;border-radius:0;margin:0}
+body.overview-data-open #overviewDataToggle,body.overview-qdm-open #qdmDataToggle{position:fixed;top:116px;left:10%;width:80%;height:34px;z-index:22;margin:0;background:#b87333;color:#fff}
+body.overview-data-open #qdmOverviewPanel,body.overview-qdm-open .panel:not(#qdmOverviewPanel){visibility:hidden}
+body.overview-data-open #qdmOverviewPanel{display:none}
+body.overview-qdm-open #overviewDataContent{display:none!important}
+body.overview-data-open #overviewDataContent{top:158px}
+body.overview-qdm-open #qdmOverview{top:158px}
+#qdmOverviewPanel>.row{display:none}
+@media(max-width:520px){.overview-title{white-space:nowrap}.overview-main-toggle{width:80%;height:39px}}
+hr{border:0;border-top:1px solid #ddd;margin:13px 0}
+
+.table-wrap{
+  overflow:auto;width:100%;max-height:70vh;
+  border:1px solid #ddd;
+  position:relative;
+}
+table{
+  border-collapse:separate;border-spacing:0;
+  width:max-content;min-width:100%;table-layout:fixed;background:white;font-size:13px
+}
+th,td{
+  border-right:1px solid #cbd5e1;
+  border-bottom:1px solid #cbd5e1;
+  padding:8px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+th{background:#dbeafe;position:sticky;top:0;z-index:2}
+tfoot td{background:#fef3c7;font-weight:bold}
+
+/* Chọn dòng để đối chiếu */
+tbody tr{cursor:pointer}
+tbody tr.selected-row td{
+  background:#fde68a!important;
+  color:#1e293b;
+}
+tbody tr:active td{background:#fef3c7}
+
+/* Bảng lọc đặc biệt */
+.special-table{
+  table-layout:auto;
+  width:max-content;
+  min-width:100%;
+}
+.special-table th,
+.special-table td{
+  width:auto;min-width:0;max-width:none;
+}
+.special-table .fixed-col{
+  position:sticky;
+  background:white;
+  z-index:4;
+}
+.special-table th.fixed-col{
+  background:#dbeafe;
+  z-index:7;
+}
+.special-table tbody tr.selected-row td.fixed-col{
+  background:#fde68a!important;
+}
+.special-table tfoot td.fixed-col{
+  background:#fef3c7;
+}
+
+.filter-card{
+  border:1px solid #cbd5e1;border-radius:9px;
+  padding:12px;margin:10px 0;background:#fafafa
+}
+.filter-card.active{border:2px solid var(--green);background:#f0fdf4}
+.value-list{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));
+  gap:7px;margin-top:8px
+}
+.value-option{
+  display:flex;align-items:center;gap:6px;
+  border:1px solid #ddd;background:white;
+  border-radius:6px;padding:8px;font-size:13px;
+  min-width:0;overflow-wrap:anywhere
+}
+.value-option input{width:auto;margin:0;flex-shrink:0}
+.value-tools{display:flex;gap:5px;flex-wrap:wrap}
+.value-tools button{font-size:12px}
+.priority{max-width:120px}
+
+#fullScreen{
+  position:fixed;inset:0;background:#f1f5f9;
+  z-index:30;overflow:auto;padding:10px
+}
+.full-head{
+  position:sticky;top:-10px;background:#14532d;color:white;
+  padding:10px;margin:-10px -10px 12px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;z-index:8
+}
+.full-head button{flex-shrink:0}
+.suggestion-box{
+  background:white;border:1px solid #cbd5e1;
+  border-radius:7px;max-height:300px;overflow:auto
+}
+.suggestion{padding:11px;border-bottom:1px solid #eee;cursor:pointer}
+.suggestion small{display:block;color:#64748b;margin-top:4px}
+.file-actions{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}
+.file-actions button{margin:2px}
+
+.special-options{
+  border:1px solid #f2c230;
+  background:#fffbeb;
+  border-radius:9px;
+  padding:12px;
+  margin-top:12px;
+}
+.special-options h3{color:#92400e}
+.hide-column-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:7px;
+  margin-top:8px;
+}
+.hide-column-list label{
+  display:flex;align-items:center;gap:6px;
+  padding:8px;border:1px solid #ddd;
+  background:white;border-radius:6px;
+  overflow-wrap:anywhere;
+}
+.hide-column-list input{width:auto;margin:0}
+
+.fixed-setting{
+  border:1px solid #f2c230;
+  background:white;
+  border-radius:8px;
+  padding:10px;
+  margin-top:12px;
+}
+.fixed-setting input{
+  max-width:180px;
+  margin-bottom:3px;
+}
+
+@media(max-width:520px){
+  .file-item{align-items:flex-start;flex-direction:column}
+  .file-actions{width:100%;justify-content:flex-start}
+  .file-actions button{flex:1;min-width:65px}
+}
+@media(min-width:700px){
+  main{padding:18px}
+  .panel{padding:18px}
+  nav{justify-content:center}
+  nav button{max-width:180px;font-size:15px}
+}
+
+/* =========================
+   XEM KHU CẠO
+========================= */
+.kc-toolbar{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:10px 0}
+.kc-toolbar>div{flex:1;min-width:160px}
+.kc-toolbar input,.kc-toolbar select{margin-bottom:0}
+.kc-teams{display:flex;gap:12px;align-items:flex-start;overflow-x:auto;padding-bottom:8px}
+.kc-team{flex:1 0 360px;min-width:360px;background:#fff;border:1px solid #cbd5e1;border-radius:9px;padding:9px}
+.kc-team h3{text-align:center;margin:5px 0 10px}
+.kc-table{width:100%;min-width:340px;font-size:13px}
+.kc-table th{position:static;background:#dbeafe}
+.kc-table td,.kc-table th{padding:6px}
+.kc-table select{min-width:74px;padding:7px 5px;margin:0;font-size:13px}
+.kc-table .kc-group{min-width:66px}
+.kc-table .kc-mode{min-width:76px}
+.kc-area{font-weight:bold;text-align:center;color:#14532d}
+.kc-manual{font-size:11px;color:#92400e;display:block}
+.kc-settings{margin:12px 0;padding:12px;border:1px solid #f2c230;border-radius:9px;background:#fffbeb}
+.kc-settings summary{font-weight:bold;color:#92400e;cursor:pointer}
+.kc-settings label{display:block;margin-top:9px}
+.kc-settings input{max-width:230px}
+.kc-note{font-size:12px;color:#64748b;line-height:1.5}
+.kc-toggle{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:bold;margin:8px 0}
+.kc-toggle input{width:auto;margin:0}
+.kc-empty{padding:12px;color:#64748b;text-align:center}
+@media(max-width:520px){
+ .kc-team{flex-basis:340px;min-width:340px}
+}
+
+
+/* =========================
+   MỞ RỘNG - QUẢN LÝ ĐỘI (CSS RIÊNG)
+   ========================= */
+.qdm-wrap{max-width:1200px;margin:0 auto}
+.qdm-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 12px}
+.qdm-toolbar button{flex:1;min-width:105px}
+.qdm-status{padding:8px 10px;background:#e8f1e9;border:1px solid #cbdacb;border-radius:7px;font-size:12px;margin:8px 0}
+.qdm-settings{background:#fff;border:1px solid #d1d5db;border-radius:9px;padding:10px;margin-bottom:12px}
+.qdm-settings h3{margin:0 0 10px}
+.qdm-settings-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.qdm-settings-grid.qdm-cycle-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:10px}
+.qdm-field{min-width:0}
+.qdm-field label{display:block;font-size:12px;font-weight:bold;margin:3px 0}
+.qdm-field input,.qdm-field select{width:100%;min-width:0;padding:7px 5px;margin:3px 0 6px;font-size:13px}
+.qdm-team-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:start}
+.qdm-team{background:#fff;border:1px solid #d1d5db;border-radius:9px;overflow:hidden;min-width:0}
+.qdm-team h3{background:#14532d;color:#fff;text-align:center;margin:0;padding:10px 4px;font-size:15px}
+.qdm-team-inner{padding:5px}
+.qdm-team-actions{display:flex;gap:4px;margin:3px 0 7px}
+.qdm-team-actions button{flex:1;padding:7px 2px;font-size:10px}
+.qdm-table{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;font-size:12px}
+.qdm-table th,.qdm-table td{border:1px solid #d5ddd6;text-align:center;padding:4px 2px;white-space:normal}
+.qdm-table th{background:#e8efe9;position:static;color:#172033}
+.qdm-table th:nth-child(1){width:19%}.qdm-table th:nth-child(2){width:25%}.qdm-table th:nth-child(3){width:56%}
+.qdm-table select{width:100%;min-width:0;padding:6px 1px;margin:0;font-size:11px;text-align:center}
+.qdm-result{min-height:27px;font-weight:bold;color:#800020;overflow-wrap:anywhere;font-size:12px}
+.qdm-hidden-row{display:none}
+.qdm-note{font-size:11px;color:#64748b;line-height:1.45;margin:7px 0}
+.qdm-adjust-buttons{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.qdm-adjust-buttons button{flex:1;min-width:110px}
+@media(max-width:600px){
+ .qdm-settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .qdm-settings-grid.qdm-cycle-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .qdm-team-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+ .qdm-team-inner{padding:3px}
+ .qdm-team h3{font-size:13px;padding:8px 2px}
+ .qdm-table th{font-size:9px;padding:4px 1px}
+ .qdm-table td{padding:3px 1px}
+ .qdm-table select{font-size:9px;padding:6px 0}
+ .qdm-result{font-size:10px;min-height:25px}
+ .qdm-team-actions{gap:2px}
+ .qdm-team-actions button{font-size:8px;padding:6px 1px}
+ .qdm-toolbar button{font-size:11px;padding:8px 5px}
+}
+@media(max-width:360px){.qdm-team h3{font-size:11px}.qdm-table select{font-size:8px}.qdm-result{font-size:9px}}
+
+.classification-group td{background:#e0f2fe!important;font-weight:bold;color:#0c4a6e}
+.classification-total td{background:#fef3c7!important;font-weight:bold}
+.classification-total td:first-child{color:#92400e}
+button:disabled{opacity:.45;cursor:not-allowed}
+.classify-rank{font-weight:bold;color:#92400e;margin-left:auto}
+</style>
+</head>
+
+<body>
+<header>Lân_CSLN</header>
+
+<nav id="mainNav">
+  <button class="green" onclick="showPage('overview')">Tổng quan</button>
+  <button class="purple" onclick="showPage('import')">Nhập liệu</button>
+  <button class="yellow" onclick="showPage('search')">Tìm Kiếm</button>
+  <button class="backup-purple" onclick="showPage('backup')">Sao lưu</button>
+</nav>
+
+<main>
+
+<!-- TỔNG QUAN -->
+<section id="overview" class="page">
+  <div class="panel">
+    <div class="overview-heading">
+      <h3 class="overview-title">TỔNG QUAN</h3>
+    </div>
+    <div class="overview-help-row"><button class="action gray small" id="helpToggle" onclick="toggleInstructionHelp()">Hiển thị HD</button></div>
+    <button class="overview-main-toggle" id="overviewDataToggle" onclick="toggleOverviewData()">Hiển thị DL</button>
+    <div id="overviewDataContent" class="hidden">
+      <div class="stat">Số tệp đã nhập: <span id="fileCount">0</span></div>
+      <div id="fileList"></div>
+    </div>
+  </div>
+  <div class="panel" id="qdmOverviewPanel">
+    <h3 style="text-align:center">KHU CẠO</h3>
+    <button class="overview-main-toggle" id="qdmDataToggle" onclick="qdmToggleOverview()">Hiển thị khu cạo</button>
+    <div id="qdmOverview" class="hidden"><p class="note qdm-note">Đang tải dữ liệu khu cạo...</p></div>
+  </div>
+</section>
+
+<!-- NHẬP LIỆU -->
+<section id="import" class="page hidden">
+  <div class="panel">
+    <h3>NHẬP LIỆU</h3>
+    <label>Chọn phương thức nhập</label>
+    <select id="importType" onchange="changeImportType()">
+      <option value="">-- Chọn phương thức --</option>
+      <option value="excel">File Excel</option>
+      <option value="json">File JSON</option>
+      <option value="manual">Nhập thủ công</option>
+    </select>
+
+    <div id="excelBox" class="hidden">
+      <label>Chọn file Excel</label>
+      <input type="file" id="excelFile" accept=".xlsx,.xls,.xlsm">
+      <p class="note">Hỗ trợ nhiều sheet trong một file Excel. Các cột được đánh dấu ẩn trong Excel sẽ không được nhập vào ứng dụng.</p>
+      <button class="action purple" onclick="importExcel()">Đọc và lưu Excel</button>
+    </div>
+
+    <div id="jsonBox" class="hidden">
+      <label>Chọn file JSON</label>
+      <input type="file" id="jsonFile" accept=".json">
+      <button class="action purple" onclick="importJSON()">Đọc và lưu JSON</button>
+    </div>
+
+    <div id="manualBox" class="hidden">
+      <label>Tiêu đề</label>
+      <input id="manualTitle" placeholder="Nhập tiêu đề">
+      <label>Nội dung</label>
+      <textarea id="manualContent" placeholder="Gõ hoặc copy, dán nội dung vào đây..."></textarea>
+      <button class="action purple" onclick="saveManual()">Lưu dữ liệu</button>
+    </div>
+  </div>
+</section>
+
+<!-- TRA CỨU -->
+<section id="search" class="page hidden">
+  <div class="panel">
+    <h3>TÌM KIẾM</h3>
+    <select id="searchType" onchange="changeSearchType()">
+      <option value="">-- Chọn phương thức --</option>
+      <option value="filter">Lọc dữ liệu Excel</option>
+      <option value="find">Tìm kiếm tiêu đề và nội dung</option>
+    </select>
+  </div>
+
+  <div id="filterBox" class="panel hidden">
+    <h3>TÌM KIẾM DỮ LIỆU EXCEL</h3>
+
+    <label>Chọn tệp Excel</label>
+    <select id="filterFile" onchange="loadFilterSheets()">
+      <option value="">-- Chọn tệp --</option>
+    </select>
+
+    <label>Chọn Sheet</label>
+    <select id="filterSheet" onchange="loadFilterColumns()">
+      <option value="">-- Chọn sheet --</option>
+    </select>
+
+    <label for="filterHeaderRows">Số dòng tiêu đề:</label>
+    <input type="number" id="filterHeaderRows" value="0" min="0" max="100" step="1" inputmode="numeric" onchange="loadFilterColumns()">
+    <p class="note instruction-help">Nhập số dòng thông tin nằm phía trên dòng tên cột. Ví dụ: tên công, đội, tên bảng, ngày tháng ở dòng 1–4 thì nhập 4; dòng 5 sẽ được dùng làm tên các cột để lọc, dữ liệu bắt đầu từ dòng 6. Nếu tên cột nằm ngay dòng 1 thì nhập 0.</p>
+
+    <hr>
+    <h3>1. CHỌN CỘT CẦN LỌC</h3>
+    <p class="note instruction-help">Tích chọn một hoặc nhiều cột. Ứng dụng chỉ tạo điều kiện lọc cho các cột được chọn.</p>
+    <div class="value-tools" id="columnSelectionTools">
+      <button type="button" class="action green small" onclick="selectAllFilterColumns()">Chọn tất cả</button>
+      <button type="button" class="action gray small" onclick="clearAllFilterColumns()">Bỏ tất cả</button>
+    </div>
+    <div id="columnSelection"></div>
+
+    <hr>
+    <h3>2. CHỌN MỤC</h3>
+    <p class="note instruction-help">
+      Mỗi cột có danh sách giá trị riêng lấy từ Excel.<br>
+      Trong cùng một cột có thể chọn nhiều giá trị.<br>
+      Giữa các cột là điều kiện AND.
+    </p>
+    <div id="filterFields"></div>
+
+    <button class="action yellow" onclick="openSpecialFilter()">3. Thiết lập nâng cao</button>
+    <button class="action gray" onclick="resetFilters()">Bỏ chọn điều kiện</button>
+
+    <!-- THIẾT LẬP LỌC ĐIỀU KIỆN -->
+    <div id="specialOptions" class="special-options hidden">
+      <h3>3. THIẾT LẬP NÂNG CAO</h3>
+      <p class="note instruction-help">
+        Chọn những cột muốn ẩn khỏi bảng kết quả. Nếu không chọn cột nào, bảng sẽ hiển thị tất cả các cột.
+        Các cột có thứ tự ưu tiên lọc sẽ được đưa lên đầu bảng.
+        Bạn có thể tùy chỉnh số cột cố định bên trái khi kéo ngang.
+      </p>
+
+      <b>Số thứ tự:</b>
+      <select id="specialSerialNumber">
+        <option value="yes" selected>Có</option>
+        <option value="no">Không</option>
+      </select>
+
+      <b>Phân cấp dữ liệu (không bắt buộc):</b>
+      <p class="note instruction-help">Nhấn chọn cột theo đúng thứ tự muốn phân loại. Cột chọn trước là cấp 1; cột chọn tiếp theo là cấp 2, cấp 3...</p>
+      <div id="classifyColumnSelection" class="hide-column-list"></div>
+
+      <div class="fixed-setting">
+        <label for="fixedRowCount">Số dòng cố định phía trên:</label>
+        <input type="number" id="fixedRowCount" value="1" min="0" step="1" inputmode="numeric">
+        <p class="note instruction-help">Mặc định cố định 1 dòng dữ liệu đầu tiên. Khi muốn thay đổi, chọn lại số dòng; chọn 0 nếu không cố định dòng dữ liệu nào.</p>
+        <label for="fixedColumnCount">Số cột cố định bên trái:</label>
+        <input type="number" id="fixedColumnCount" value="1" min="0" step="1" inputmode="numeric">
+        <p class="note instruction-help">Mặc định cố định 1 cột bên trái. Có thể thay đổi số cột nếu cần.</p>
+      </div>
+
+      <hr>
+      <b style="display:block;color:#b91c1c;margin:10px 0 6px">Chọn cột muốn ẩn (không bắt buộc):</b>
+      <div id="hideColumnSelection" class="hide-column-list"></div>
+
+      <button class="action yellow" onclick="applySpecialFilters()">OK – Tạo Bảng</button>
+      <button class="action gray" onclick="closeSpecialFilter()">Đóng thiết lập</button>
+    </div>
+  </div>
+
+  <div id="findBox" class="panel hidden">
+    <h3>TÌM KIẾM DỮ LIỆU</h3>
+    <input id="searchInput" placeholder="Gõ tiêu đề hoặc nội dung cần tìm..." oninput="searchSuggestions()" autocomplete="off">
+    <div id="suggestions" class="suggestion-box"></div>
+  </div>
+</section>
+
+<!-- SAO LƯU -->
+<section id="backup" class="page hidden">
+  <div class="panel">
+    <h3>SAO LƯU DỮ LIỆU</h3>
+    <button class="action green" onclick="exportJSON()">Sao lưu JSON</button>
+    <button class="action purple" onclick="exportExcel()">Sao lưu Excel</button>
+    <hr>
+    <p class="note">
+      JSON: Sao lưu đầy đủ các tệp, sheet và dữ liệu nhập thủ công.<br>
+      Excel: Xuất các bảng thành các sheet trong một workbook.
+    </p>
+  </div>
+</section>
+
+
+
+</main>
+
+<div id="fullScreen" class="hidden"></div>
+
+<script>
+/* =========================
+   CƠ SỞ DỮ LIỆU
+========================= */
+const DB_NAME = "QLVC_CSKD_DATABASE_V1";
+const STORE = "records";
+
+let db = null;
+let dbPromise = null;
+let currentFile = null;
+let currentResult = null;
+let selectedColumns = [];
+let classificationColumns = [];
+let editingExcelSheet = false;
+let returnPage = "overview";
+
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    let req;
+    try{
+      // Giữ nguyên cách mở CSDL của bản cũ đã chạy ổn định trên điện thoại.
+      req = indexedDB.open(DB_NAME,1);
+    }catch(err){
+      reject(err);
+      return;
+    }
+
+    req.onupgradeneeded = e=>{
+      let d = e.target.result;
+      if(!d.objectStoreNames.contains(STORE)){
+        d.createObjectStore(STORE,{keyPath:"id",autoIncrement:true});
+      }
+    };
+
+    req.onsuccess = e=>{
+      db = e.target.result;
+      db.onversionchange = ()=>db.close();
+      resolve(db);
+    };
+    req.onerror = ()=>reject(req.error || new Error("Chrome không mở được cơ sở dữ liệu."));
+    req.onblocked = ()=>reject(new Error("CSDL đang được sử dụng ở một cửa sổ khác. Hãy đóng các tab QLVC_CSKD đang mở."));
+  });
+}
+
+async function getAll(){
+  if(!db) await openDB();
+  return new Promise((resolve,reject)=>{
+    try{
+      if(!db.objectStoreNames.contains(STORE)) throw new Error("Không tìm thấy kho dữ liệu 'records'.");
+      let tx = db.transaction(STORE,"readonly");
+      let req = tx.objectStore(STORE).getAll();
+      req.onsuccess = ()=>resolve(req.result || []);
+      req.onerror = ()=>reject(req.error || new Error("Không đọc được danh sách dữ liệu."));
+      tx.onerror = ()=>reject(tx.error || new Error("Lỗi giao dịch khi đọc dữ liệu."));
+    }catch(e){reject(e);}
+  });
+}
+
+async function saveRecord(data){
+  if(!db) await openDB();
+  return new Promise((resolve,reject)=>{
+    let tx = db.transaction(STORE,"readwrite");
+    let store = tx.objectStore(STORE);
+    let req = data.id ? store.put(data) : store.add(data);
+    let resultId = data.id || null;
+
+    req.onsuccess = ()=>{resultId = req.result};
+    tx.oncomplete = ()=>resolve(resultId);
+    tx.onerror = ()=>reject(tx.error);
+    tx.onabort = ()=>reject(tx.error || new Error("Không thể lưu dữ liệu."));
+  });
+}
+
+async function deleteRecord(id){
+  if(!db) await openDB();
+  return new Promise((resolve,reject)=>{
+    let tx = db.transaction(STORE,"readwrite");
+    tx.objectStore(STORE).delete(id);
+    tx.oncomplete = ()=>resolve();
+    tx.onerror = ()=>reject(tx.error);
+    tx.onabort = ()=>reject(tx.error || new Error("Không thể xóa dữ liệu."));
+  });
+}
+
+/* =========================
+   TIỆN ÍCH
+========================= */
+function downloadFile(content,name,type){
+  let blob = new Blob([content],{type});
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+
+function escapeHTML(s){
+  return String(s ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+function escapeAttr(s){return escapeHTML(s)}
+
+function normalize(s){
+  return String(s ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/đ/g,"d")
+    .trim();
+}
+
+function parseNumber(v){
+  if(typeof v === "number" && Number.isFinite(v)) return v;
+  let s = String(v ?? "").trim().replace(/\s/g,"");
+  if(!s) return null;
+  let parenthesized=false;
+  if(/^\(.*\)$/.test(s)){parenthesized=true;s=s.slice(1,-1);}
+  // Quy ước Việt Nam: dấu chấm phân cách hàng nghìn, dấu phẩy là thập phân.
+  // Ví dụ 1.123 = 1123; 1,123 = 1.123; 1.234,56 = 1234.56.
+  if(s.includes(",")){
+    s = s.replace(/\./g,"").replace(",",".");
+  }else if(/^[-+]?\d{1,3}(\.\d{3})+(e[-+]?\d+)?$/i.test(s)){
+    s = s.replace(/\./g,"");
+  }
+  const n = Number(s);
+  return Number.isFinite(n) ? (parenthesized?-n:n) : null;
+}
+
+function formatNumber(n){
+  return Number(n.toFixed(4)).toLocaleString("vi-VN",{maximumFractionDigits:4});
+}
+
+// Định dạng số theo hậu tố cuối tiêu đề cột (1), (2), (3), (4).
+// Hậu tố quy định chính xác số chữ số thập phân và được ưu tiên hơn quy tắc cũ.
+function decimalPlacesForHeader(header){
+  // Chấp nhận cả dấu ngoặc thường và ngoặc toàn chiều rộng; bỏ qua khoảng trắng thừa.
+  const raw=String(header ?? "").trim().replace(/[（]/g,"(").replace(/[）]/g,")");
+  const suffix=raw.match(/\(\s*([1-4])\s*\)\s*$/);
+  if(suffix) return Number(suffix[1]);
+
+  // Giữ quy tắc tương thích với các tiêu đề cũ chưa có hậu tố.
+  const h=normalize(raw).replace(/[^a-z0-9]+/g," ").trim();
+  if(/(^|\s)dien\s*tich(\s|$)/.test(h) || /(^|\s)dt(\s|$)/.test(h)) return 2;
+  if(/(^|\s)phan\s*cay(\s|$)/.test(h)) return 1;
+  return 0;
+}
+function roundExcel(value,digits){
+  const factor=Math.pow(10,digits);
+  // Excel ROUND: làm tròn nửa đơn vị ra xa số 0, vẫn giữ nguyên phần nguyên.
+  // Number.EPSILON hạn chế sai số nhị phân ở các giá trị như 1,005.
+  const rounded=Math.round((Math.abs(value)+Number.EPSILON)*factor);
+  return (value<0?-1:1)*rounded/factor;
+}
+function formatValueByHeader(value,header){
+  if(value===null||value===undefined||value==="") return "";
+  const n=parseNumber(value);
+  if(n===null) return String(value);
+  // Ví dụ (2): 50 -> 50,00; 347,568 -> 347,57.
+  // Ví dụ (1): 12 -> 12,0; 46,167 -> 46,2.
+  const digits=decimalPlacesForHeader(header);
+  const rounded=roundExcel(n,digits);
+  return new Intl.NumberFormat("vi-VN",{
+    minimumFractionDigits:digits,
+    maximumFractionDigits:digits,
+    useGrouping:true
+  }).format(rounded);
+}
+function resultHeaderForCell(resultData,headers,index){
+  if(resultData?.special){
+    if(resultData.addSerialNumber && index===0) return "STT";
+    const offset=resultData.addSerialNumber?1:0;
+    const sourceIndex=resultData.visibleColumns?.[index-offset];
+    return sourceIndex===undefined?headers[index]:resultData.sourceHeaders?.[sourceIndex]??headers[index];
+  }
+  return headers[index];
+}
+function formatResultRowValues(values,headers,resultData){
+  return (values||[]).map((v,i)=>formatValueByHeader(v,resultHeaderForCell(resultData,headers,i)));
+}
+
+function isExcelFile(f){
+  return f && (f.type === "excel" || (!f.type && Array.isArray(f.sheets) && f.sheets.length));
+}
+
+function normalizeRecord(f){
+  let record = {...f};
+
+  if(!record.name) record.name = record.title || "Dữ liệu JSON";
+
+  if(!record.type){
+    record.type = Array.isArray(record.sheets) && record.sheets.length ? "excel" : "manual";
+  }
+
+  if(record.type === "excel"){
+    if(!Array.isArray(record.sheets)) record.sheets = [];
+    record.sheets = record.sheets.map((s,i)=>({
+      name:String(s.name || ("Sheet" + (i+1))),
+      headers:Array.isArray(s.headers) ? s.headers.map(x=>String(x ?? "")) : [],
+      rows:Array.isArray(s.rows) ? s.rows.map(r=>Array.isArray(r) ? r : []) : [],
+      rawRows:Array.isArray(s.rawRows) ? s.rawRows.map(r=>Array.isArray(r) ? r : []) : undefined,
+      columnIndexes:Array.isArray(s.columnIndexes)?s.columnIndexes.map(Number):undefined
+    }));
+  }else{
+    record.type = "manual";
+    record.title = record.title || record.name;
+    record.content = String(record.content ?? "");
+    record.sheets = [];
+  }
+
+  if(record.visible === undefined) record.visible = true;
+  if(!record.created) record.created = new Date().toISOString();
+
+  return record;
+}
+
+/* =========================
+   ĐIỀU HƯỚNG
+========================= */
+function showPage(id){
+  closeFull(false);
+  document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  document.getElementById("mainNav").classList.remove("hidden");
+
+  if(id === "overview"){ refreshOverview(); if(qdmState) qdmRender(); }
+  if(id === "search" && document.getElementById("searchType").value === "filter"){
+    loadFilterFiles();
+  }
+}
+
+/* =========================
+   TỔNG QUAN
+========================= */
+const OVERVIEW_DATA_HIDDEN_KEY = "QLVC_CSKD_OVERVIEW_DATA_HIDDEN_V1";
+function toggleOverviewData(){
+  const content=document.getElementById("overviewDataContent");
+  const button=document.getElementById("overviewDataToggle");
+  if(!content||!button)return;
+  const show=content.classList.contains("hidden");
+  if(show){
+    const qdm=document.getElementById("qdmOverview"),qdmBtn=document.getElementById("qdmDataToggle");
+    if(qdm){qdm.classList.add("hidden");qdm.classList.remove("overview-expanded");}
+    document.body.classList.remove("overview-qdm-open");
+    if(qdmBtn)qdmBtn.textContent="Hiển thị khu cạo";
+  }
+  content.classList.toggle("hidden",!show);
+  content.classList.toggle("overview-expanded",show);
+  document.body.classList.toggle("overview-data-open",show);
+  button.textContent=show?"Ẩn DL":"Hiển thị DL";
+  if(show) refreshOverview();
+  try{localStorage.setItem(OVERVIEW_DATA_HIDDEN_KEY,show?"0":"1");}catch(e){}
+}
+const INSTRUCTION_HELP_KEY = "LAN_CSLN_INSTRUCTION_HELP_V1";
+function toggleInstructionHelp(){
+  const show=!document.body.classList.contains("show-instruction-help");
+  document.body.classList.toggle("show-instruction-help",show);
+  const button=document.getElementById("helpToggle");
+  if(button)button.textContent=show?"Ẩn HD":"Hiển thị HD";
+  try{localStorage.setItem(INSTRUCTION_HELP_KEY,show?"1":"0");}catch(e){}
+}
+function restoreInstructionHelpVisibility(){
+  document.body.classList.remove("show-instruction-help");
+  const button=document.getElementById("helpToggle");
+  if(button)button.textContent="Hiển thị HD";
+}
+
+function restoreOverviewDataVisibility(){
+  const content=document.getElementById("overviewDataContent");
+  const button=document.getElementById("overviewDataToggle");
+  if(content)content.classList.add("hidden");
+  if(button){button.textContent="Hiển thị DL";button.classList.add("overview-main-toggle");}
+  if(content)content.classList.remove("overview-expanded");
+  document.body.classList.remove("overview-data-open");
+  try{localStorage.setItem(OVERVIEW_DATA_HIDDEN_KEY,"1");}catch(e){}
+}
+
+async function refreshOverview(){
+  try{
+    let data = await getAll();
+    document.getElementById("fileCount").textContent = data.length;
+
+    let list = document.getElementById("fileList");
+    list.innerHTML = "";
+
+    if(!data.length){
+      list.innerHTML = '<p class="note">Chưa có dữ liệu.</p>';
+      return;
+    }
+
+    data.sort((a,b)=>(b.id || 0)-(a.id || 0));
+
+    data.forEach(f=>{
+      let div = document.createElement("div");
+      div.className = "file-item";
+
+      let left = document.createElement("div");
+      left.style.flex = "1";
+
+      let name = document.createElement("div");
+      name.className = "file-name";
+      name.textContent = f.name || f.title || "Tệp không tên";
+
+      let status = document.createElement("div");
+      status.className = "status";
+      status.innerHTML = f.visible !== false
+        ? '<span class="badge">Đang hiển thị</span>'
+        : '<span class="badge hidden-badge">Đang ẩn</span>';
+
+      left.append(name,status);
+
+      let right = document.createElement("div");
+      right.className = "file-actions";
+
+      let open = document.createElement("button");
+      open.className = "action green small";
+      open.textContent = "Xem";
+      open.onclick = ()=>openFile(f.id);
+
+      let toggle = document.createElement("button");
+      toggle.className = "action gray small";
+      toggle.textContent = f.visible !== false ? "Ẩn" : "Hiện";
+      toggle.onclick = async()=>{
+        try{
+          let latest = (await getAll()).find(x=>x.id === f.id);
+          if(!latest) return alert("Tệp không còn tồn tại.");
+          latest.visible = latest.visible === false ? true : false;
+          await saveRecord(latest);
+          await refreshOverview();
+        }catch(e){
+          alert("Không thể thay đổi trạng thái: " + e.message);
+        }
+      };
+
+      let del = document.createElement("button");
+      del.className = "action red small";
+      del.textContent = "Xóa";
+      del.onclick = async()=>{
+        if(!confirm('Bạn có chắc chắn muốn xóa tệp "'+(f.name || f.title || "")+'"?')) return;
+        try{
+          await deleteRecord(f.id);
+          if(currentFile && currentFile.id === f.id) currentFile = null;
+          await refreshOverview();
+          await loadFilterFiles();
+        }catch(e){
+          alert("Không thể xóa tệp: " + e.message);
+        }
+      };
+
+      right.append(open,toggle,del);
+      div.append(left,right);
+      list.append(div);
+    });
+  }catch(e){
+    console.error(e);
+    alert("Không thể tải danh sách dữ liệu: " + e.message);
+  }
+}
+
+/* =========================
+   NHẬP LIỆU
+========================= */
+function changeImportType(){
+  let v = document.getElementById("importType").value;
+  ["excelBox","jsonBox","manualBox"].forEach(id=>{
+    document.getElementById(id).classList.add("hidden");
+  });
+
+  if(v === "excel") document.getElementById("excelBox").classList.remove("hidden");
+  if(v === "json") document.getElementById("jsonBox").classList.remove("hidden");
+  if(v === "manual") document.getElementById("manualBox").classList.remove("hidden");
+}
+
+function isHiddenExcelColumn(ws,index){
+  let cols = ws["!cols"] || [];
+  let info = cols[index];
+  if(!info) return false;
+  return info.hidden === true || Number(info.width) === 0;
+}
+
+function readVisibleExcelSheet(ws,sheetName){
+  let allRows = XLSX.utils.sheet_to_json(ws,{
+    header:1,
+    defval:"",
+    raw:true,
+    blankrows:true
+  });
+  allRows=allRows.map(row=>row.map(v=>v instanceof Date?`${String(v.getDate()).padStart(2,"0")}/${String(v.getMonth()+1).padStart(2,"0")}/${v.getFullYear()}`:v));
+
+  if(!allRows.length){
+    return {name:sheetName,headers:[],rows:[],rawRows:[]};
+  }
+
+  let range = ws["!ref"] ? XLSX.utils.decode_range(ws["!ref"]) : null;
+  let totalColumns = range ? range.e.c + 1 : 0;
+  allRows.forEach(row=>{ totalColumns = Math.max(totalColumns,row.length); });
+
+  let visibleIndexes = [];
+  for(let c=0;c<totalColumns;c++){
+    if(!isHiddenExcelColumn(ws,c)) visibleIndexes.push(c);
+  }
+
+  // Lưu toàn bộ các dòng theo đúng thứ tự Excel để người dùng chọn dòng tên cột
+  // ở bước tra cứu; không mặc định dòng 1 là tên cột.
+  let rawRows = allRows.map(row=>visibleIndexes.map(i=>row[i] ?? ""));
+  let headers = visibleIndexes.map((i,index)=>{
+    let value = rawRows[0] ? rawRows[0][index] : "";
+    return String(value || ("Cột "+(i+1)));
+  });
+  let data = rawRows.slice(1).filter(row=>row.some(v=>v!=="" && v!==null && v!==undefined));
+
+  return {name:sheetName,headers,rows:data,rawRows,columnIndexes:visibleIndexes};
+}
+
+async function importExcel(){
+  try{
+    let file = document.getElementById("excelFile").files[0];
+    if(!file) return alert("Vui lòng chọn file Excel.");
+    if(typeof XLSX === "undefined") return alert("Không tải được thư viện Excel. Kiểm tra Internet.");
+
+    let wb = XLSX.read(await file.arrayBuffer(),{
+      type:"array",
+      cellDates:true,
+      cellStyles:true
+    });
+
+    let sheets = [];
+    wb.SheetNames.forEach(name=>{
+      let ws = wb.Sheets[name];
+      sheets.push(readVisibleExcelSheet(ws,name));
+    });
+
+    await saveRecord({
+      name:file.name,
+      type:"excel",
+      sheets,
+      visible:true,
+      created:new Date().toISOString()
+    });
+
+    document.getElementById("excelFile").value = "";
+    alert("Đã nhập Excel thành công. Các cột ẩn đã được loại khỏi dữ liệu.");
+    showPage("overview");
+  }catch(e){
+    alert("Lỗi đọc Excel: " + e.message);
+  }
+}
+
+async function importJSON(){
+  try{
+    let file = document.getElementById("jsonFile").files[0];
+    if(!file) return alert("Vui lòng chọn JSON.");
+
+    let obj = JSON.parse(await file.text());
+    let records = Array.isArray(obj) ? obj : (Array.isArray(obj.records) ? obj.records : [obj]);
+    let count = 0;
+
+    for(let item of records){
+      if(!item || typeof item !== "object" || Array.isArray(item)) continue;
+      let f = normalizeRecord(item);
+      delete f.id;
+      await saveRecord(f);
+      count++;
+    }
+
+    document.getElementById("jsonFile").value = "";
+    alert("Đã nhập " + count + " tệp JSON.");
+    showPage("overview");
+  }catch(e){
+    alert("File JSON không hợp lệ: " + e.message);
+  }
+}
+
+async function saveManual(){
+  let title = document.getElementById("manualTitle").value.trim();
+  let content = document.getElementById("manualContent").value;
+  if(!title) return alert("Vui lòng nhập tiêu đề.");
+
+  try{
+    await saveRecord({
+      name:title,title,content,
+      type:"manual",sheets:[],visible:true,
+      created:new Date().toISOString()
+    });
+
+    document.getElementById("manualTitle").value = "";
+    document.getElementById("manualContent").value = "";
+    alert("Đã lưu dữ liệu.");
+    showPage("overview");
+  }catch(e){
+    alert("Không thể lưu dữ liệu: " + e.message);
+  }
+}
+
+/* =========================
+   XEM TỆP
+========================= */
+async function openFile(id){
+  let all = await getAll();
+  currentFile = all.find(x=>x.id === id);
+  if(!currentFile) return;
+
+  returnPage = "overview";
+
+  editingExcelSheet=false;
+  let html = `
+    <div class="full-head">
+      <b>XEM DỮ LIỆU</b>
+      <button class="action gray small" onclick="closeFull()">Quay lại</button>
+    </div>
+    <div class="panel">
+      <label>Tên tệp / Tiêu đề</label>
+      <input id="editName" value="${escapeAttr(currentFile.name || "")}" disabled>
+  `;
+
+  if(currentFile.type === "manual"){
+    html += `
+      <label>Nội dung</label>
+      <textarea id="editContent" disabled>${escapeHTML(currentFile.content || "")}</textarea>
+    `;
+  }else{
+    let sheets = Array.isArray(currentFile.sheets) ? currentFile.sheets : [];
+    html += `
+      <p><b>Số sheet:</b> ${sheets.length}</p>
+      <select id="viewSheet">
+        ${sheets.map((s,i)=>`<option value="${i}">${escapeHTML(s.name)}</option>`).join("")}
+      </select>
+      <button class="action green" onclick="viewFileSheet()">Xem sheet</button>
+      <div id="viewSheetData"></div>
+    `;
+  }
+
+  html += `
+      <hr>
+      <button class="action purple" onclick="enableEditFile()">Chỉnh sửa</button>
+      <button class="action green" onclick="saveEditedFile()">Lưu</button>
+      <button class="action red" onclick="removeCurrentFile()">Xóa tệp</button>
+    </div>
+  `;
+
+  showFull(html);
+  if(currentFile.type !== "manual" && currentFile.sheets.length) viewFileSheet();
+}
+
+function enableEditFile(){
+  document.getElementById("editName").disabled=false;
+  let c=document.getElementById("editContent");if(c)c.disabled=false;
+  editingExcelSheet=true;
+  if(currentFile?.type==="excel")viewFileSheet();
+  alert("Có thể chỉnh sửa tên tệp và từng ô trong bảng Excel. Nhấn Lưu để ghi thay đổi.");
+}
+
+async function saveEditedFile(){
+  let name = document.getElementById("editName").value.trim();
+  if(!name) return alert("Tên không được để trống.");
+
+  currentFile.name = name;
+
+  if(currentFile.type === "manual"){
+    currentFile.title=name;
+    currentFile.content=document.getElementById("editContent").value;
+  }else if(currentFile.type==="excel"){
+    const table=document.getElementById("editableSheetTable");
+    const select=document.getElementById("viewSheet");
+    if(table&&select){
+      const si=Number(select.value),sheet=currentFile.sheets[si];
+      const rows=Array.isArray(sheet.rawRows)?sheet.rawRows:[sheet.headers,...sheet.rows];
+      table.querySelectorAll("td[contenteditable='true']").forEach(td=>{
+        const cellRow=Number(td.dataset.row),col=Number(td.dataset.col);
+        // Nếu ô chỉ đang hiển thị theo định dạng làm tròn mà người dùng không sửa,
+        // giữ nguyên giá trị gốc trong Excel; chỉ ghi lại khi nội dung thực sự thay đổi.
+        const displayed=td.dataset.displayValue;
+        if(displayed!==undefined && td.innerText.trim()===displayed.trim()) return;
+        while(rows.length<=cellRow)rows.push([]);
+        rows[cellRow][col]=td.innerText;
+      });
+      sheet.rawRows=rows;
+      const header=rows[0]||[];
+      const width=rows.reduce((m,r)=>Math.max(m,r.length),header.length);
+      sheet.headers=Array.from({length:width},(_,i)=>String(header[i]??("Cột "+(i+1))));
+      sheet.rows=rows.slice(1).filter(r=>r.some(v=>String(v??"").trim()!==""));
+    }
+  }
+
+  try{
+    await saveRecord(currentFile);
+    alert("Đã lưu thay đổi.");
+    await refreshOverview();
+  }catch(e){
+    alert("Không thể lưu thay đổi: " + e.message);
+  }
+}
+
+function viewFileSheet(){
+  let select = document.getElementById("viewSheet");
+  if(!select || !currentFile) return;
+
+  let i = Number(select.value);
+  let s = currentFile.sheets && currentFile.sheets[i];
+
+  if(s){
+    const rows=Array.isArray(s.rawRows)?s.rawRows:[s.headers,...s.rows];
+    const width=rows.reduce((m,r)=>Math.max(m,(r||[]).length),0);
+    const headers=Array.from({length:width},(_,i)=>"Cột "+String.fromCharCode(65+i));
+    // Khi xem tệp từ Tổng quan, dùng dòng tiêu đề gốc của Excel để
+    // định dạng và làm tròn số theo hậu tố (1), (2), (3), (4).
+    // Khi bật chỉnh sửa, giữ nguyên dữ liệu gốc để tránh ghi đè số đã làm tròn.
+    const formatHeaders=Array.isArray(rows[0])?rows[0]:(s.headers||[]);
+    document.getElementById("viewSheetData").innerHTML=renderTable(headers,rows,false,false,0,null,editingExcelSheet,formatHeaders);
+  }
+}
+
+async function removeCurrentFile(){
+  if(!currentFile) return;
+  if(!confirm("Bạn chắc chắn muốn xóa tệp?")) return;
+
+  try{
+    await deleteRecord(currentFile.id);
+    currentFile = null;
+    closeFull();
+    await refreshOverview();
+    await loadFilterFiles();
+  }catch(e){
+    alert("Không thể xóa tệp: " + e.message);
+  }
+}
+
+/* =========================
+   TRA CỨU
+========================= */
+function changeSearchType(){
+  let v = document.getElementById("searchType").value;
+  document.getElementById("filterBox").classList.toggle("hidden",v !== "filter");
+  document.getElementById("findBox").classList.toggle("hidden",v !== "find");
+
+  if(v === "filter") loadFilterFiles();
+}
+
+async function loadFilterFiles(){
+  let sel = document.getElementById("filterFile");
+  let sheetSel = document.getElementById("filterSheet");
+
+  sel.innerHTML = '<option value="">-- Chọn tệp Excel --</option>';
+  sheetSel.innerHTML = '<option value="">-- Chọn sheet --</option>';
+
+  document.getElementById("columnSelection").innerHTML = "";
+  document.getElementById("filterFields").innerHTML = "";
+  document.getElementById("specialOptions").classList.add("hidden");
+  selectedColumns = [];
+  currentFile = null;
+
+  try{
+    let all = await getAll();
+    let files = all.filter(f=>isExcelFile(f) && f.visible !== false);
+
+    files.sort((a,b)=>(a.name || "").localeCompare(b.name || "","vi"));
+
+    files.forEach(f=>{
+      let o = document.createElement("option");
+      o.value = f.id;
+      o.textContent = f.name || "Tệp không tên";
+      sel.appendChild(o);
+    });
+
+    if(!files.length){
+      let o = document.createElement("option");
+      o.value = "";
+      o.textContent = "Chưa có tệp Excel nào được nhập";
+      o.disabled = true;
+      sel.appendChild(o);
+    }
+  }catch(e){
+    alert("Không thể tải danh sách tệp Excel: " + e.message);
+  }
+}
+
+async function loadFilterSheets(){
+  let id = Number(document.getElementById("filterFile").value);
+  let all = await getAll();
+
+  currentFile = all.find(f=>f.id === id && isExcelFile(f));
+
+  let sel = document.getElementById("filterSheet");
+  sel.innerHTML = '<option value="">-- Chọn sheet --</option>';
+  document.getElementById("columnSelection").innerHTML = "";
+  document.getElementById("filterFields").innerHTML = "";
+  document.getElementById("specialOptions").classList.add("hidden");
+  document.getElementById("filterHeaderRows").value = 0;
+  selectedColumns = [];
+
+  if(!currentFile) return;
+
+  let sheets = Array.isArray(currentFile.sheets) ? currentFile.sheets : [];
+
+  sheets.forEach((s,i)=>{
+    let o = document.createElement("option");
+    o.value = i;
+    o.textContent = s.name || ("Sheet " + (i+1));
+    sel.append(o);
+  });
+
+  if(sheets.length){
+    sel.value = "0";
+    loadFilterColumns();
+  }
+}
+
+function getSelectedSheet(){
+  if(!currentFile || !Array.isArray(currentFile.sheets)) return null;
+  let index = Number(document.getElementById("filterSheet").value);
+  return currentFile.sheets[index] || null;
+}
+
+/* =========================
+   CHỌN CỘT ĐỘNG
+========================= */
+function getFilterHeaderRowCount(){
+  let input = document.getElementById("filterHeaderRows");
+  let count = parseInt(input && input.value,10);
+  if(!Number.isFinite(count) || count < 0) count = 0;
+  count = Math.min(count,100);
+  if(input) input.value = count;
+  return count;
+}
+
+function getFilterSheetView(sheet){
+  if(!sheet) return {headers:[],rows:[],rawRows:[],headerIndex:0,instructionRow:[],columnIndexes:[]};
+
+  // Bản mới có rawRows đầy đủ. Với dữ liệu đã nhập từ phiên bản cũ,
+  // chỉ có thể dùng lại hàng tiêu đề và dữ liệu đã lưu trước đó.
+  let sourceRows = Array.isArray(sheet.rawRows)
+    ? sheet.rawRows
+    : [Array.isArray(sheet.headers)?sheet.headers:[], ...(Array.isArray(sheet.rows)?sheet.rows:[])];
+
+  let headerIndex = getFilterHeaderRowCount();
+  if(headerIndex >= sourceRows.length) return {headers:[],rows:[],rawRows:sourceRows,headerIndex,instructionRow:[],columnIndexes:sheet.columnIndexes||[]};
+
+  let rawHeaders = sourceRows[headerIndex] || [];
+  let width = sourceRows.reduce((max,row)=>Math.max(max,Array.isArray(row)?row.length:0),rawHeaders.length);
+  let headers = Array.from({length:width},(_,i)=>{
+    let value = String(rawHeaders[i] ?? "").trim();
+    return value || ("Cột "+(i+1));
+  });
+
+  let rows = sourceRows.slice(headerIndex+1)
+    .map(row=>headers.map((_,i)=>(row||[])[i] ?? ""))
+    .filter(row=>row.some(v=>v!=="" && v!==null && v!==undefined));
+
+  return {headers,rows,rawRows:sourceRows,headerIndex,instructionRow:headerIndex>0?(sourceRows[headerIndex-1]||[]):[],columnIndexes:Array.isArray(sheet.columnIndexes)?sheet.columnIndexes:headers.map((_,i)=>i)};
+}
+
+function getFilterDataRows(sheet){
+  return getFilterSheetView(sheet).rows;
+}
+
+function getAlphabeticalColumnIndexes(headers){
+  const collator=new Intl.Collator("vi",{numeric:true,sensitivity:"base"});
+  return (headers||[]).map((h,i)=>({h:String(h||("Cột "+(i+1))),i}))
+    .sort((a,b)=>collator.compare(a.h,b.h)||a.i-b.i).map(x=>x.i);
+}
+
+function loadFilterColumns(){
+  let sheet = getSelectedSheet();
+  let box = document.getElementById("columnSelection");
+  let fields = document.getElementById("filterFields");
+
+  box.innerHTML = "";
+  fields.innerHTML = "";
+  document.getElementById("specialOptions").classList.add("hidden");
+  selectedColumns = [];
+
+  if(!sheet) return;
+  let view = getFilterSheetView(sheet);
+  if(!view.headers.length) return;
+
+  getAlphabeticalColumnIndexes(view.headers).forEach(i=>{
+    const h=view.headers[i];
+    let label = document.createElement("label");
+    label.className = "value-option";
+    let cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.value = String(i);
+    cb.onchange = ()=>{
+      if(cb.checked){if(!selectedColumns.includes(i)) selectedColumns.push(i);}
+      else selectedColumns = selectedColumns.filter(x=>x !== i);
+      renderDynamicFilters();
+    };
+    label.append(cb,document.createTextNode(String(h ?? ("Cột "+(i+1)))));
+    box.append(label);
+  });
+}
+function selectAllFilterColumns(){
+  const box=document.getElementById("columnSelection");
+  if(!box)return;
+  const ordered=getAlphabeticalColumnIndexes(getFilterSheetView(getSelectedSheet()).headers);
+  // Giữ thứ tự ưu tiên của những cột đã chọn; chỉ nối thêm các cột còn thiếu.
+  ordered.forEach(i=>{if(!selectedColumns.includes(i))selectedColumns.push(i);});
+  box.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked=true);
+  renderDynamicFilters();
+}
+function clearAllFilterColumns(){
+  const box=document.getElementById("columnSelection");
+  if(box)box.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked=false);
+  selectedColumns=[];
+  document.getElementById("filterFields").innerHTML="";
+  document.getElementById("specialOptions").classList.add("hidden");
+  classificationColumns=[];
+}
+
+function getCurrentSelections(){
+  let result = {};
+
+  document.querySelectorAll(".filter-card").forEach(card=>{
+    let col = Number(card.dataset.col);
+    result[col] = [...card.querySelectorAll(".value-option input:checked")].map(x=>x.value);
+  });
+
+  return result;
+}
+
+function renderDynamicFilters(savedSelections=null){
+  let sheet = getSelectedSheet();
+  let box = document.getElementById("filterFields");
+  let oldSelections = savedSelections || getCurrentSelections();
+
+  box.innerHTML = "";
+  if(!sheet) return;
+  let view = getFilterSheetView(sheet);
+
+  // Lọc phụ thuộc: mỗi cột chỉ lấy giá trị xuất hiện trong tập dòng
+  // còn lại sau khi áp dụng các điều kiện đã chọn ở những cột đứng trước.
+  let previousConditions = [];
+
+  selectedColumns.forEach((col,index)=>{
+    let availableRows = previousConditions.length
+      ? getFilteredRows(sheet,previousConditions)
+      : getFilterDataRows(sheet);
+    let values = getUniqueValues(availableRows,col);
+    let availableKeys = new Set(values.map(v=>normalize(v)));
+    let saved = (oldSelections[col] || []).filter(v=>availableKeys.has(normalize(v)));
+
+    // Chỉ giữ lại các lựa chọn còn hợp lệ sau khi điều kiện trước thay đổi.
+
+    let card = document.createElement("div");
+    card.className = "filter-card active";
+    card.dataset.col = col;
+
+    let title = document.createElement("div");
+    title.innerHTML = "<b>"+escapeHTML(view.headers[col]) + "</b> " +
+      "<span class='badge'>Ưu tiên "+(index+1)+"</span>";
+    card.append(title);
+
+    let priority = document.createElement("select");
+    priority.className = "priority";
+
+    selectedColumns.forEach((c,i)=>{
+      let option = document.createElement("option");
+      option.value = i+1;
+      option.textContent = "Ưu tiên " + (i+1);
+      if(i === index) option.selected = true;
+      priority.append(option);
+    });
+
+    priority.onchange = ()=>{
+      let selections = getCurrentSelections();
+      let order = selectedColumns.map(c=>{
+        let el = document.querySelector('.filter-card[data-col="'+c+'"] .priority');
+        return {col:c,priority:Number(el ? el.value : 99)};
+      });
+      order.sort((a,b)=>a.priority-b.priority);
+      selectedColumns = order.map(x=>x.col);
+      renderDynamicFilters(selections);
+    };
+
+    card.append(document.createTextNode("Thứ tự lọc: "),priority);
+
+    let tools = document.createElement("div");
+    tools.className = "value-tools";
+
+    let allBtn = document.createElement("button");
+    allBtn.className = "action green small";
+    allBtn.textContent = "Chọn tất cả";
+    allBtn.onclick = ()=>{
+      card.querySelectorAll(".value-option input").forEach(x=>x.checked=true);
+      renderDynamicFilters(getCurrentSelections());
+    };
+
+    let noneBtn = document.createElement("button");
+    noneBtn.className = "action gray small";
+    noneBtn.textContent = "Bỏ chọn tất cả";
+    noneBtn.onclick = ()=>{
+      card.querySelectorAll(".value-option input").forEach(x=>x.checked=false);
+      renderDynamicFilters(getCurrentSelections());
+    };
+
+    tools.append(allBtn,noneBtn);
+    card.append(tools);
+
+    let count = document.createElement("div");
+    count.className = "note";
+    count.dataset.count = "1";
+    count.textContent = "Đã chọn: "+saved.length+" giá trị";
+    card.append(count);
+
+    let search = document.createElement("input");
+    search.placeholder = "Tìm nhanh giá trị trong cột...";
+    search.oninput = ()=>{
+      let q = normalize(search.value);
+      card.querySelectorAll(".value-option").forEach(el=>{
+        el.classList.toggle("hidden",!normalize(el.dataset.value).includes(q));
+      });
+    };
+    card.append(search);
+
+    let list = document.createElement("div");
+    list.className = "value-list";
+
+    values.forEach(value=>{
+      let label = document.createElement("label");
+      label.className = "value-option";
+      label.dataset.value = value;
+
+      let cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.value = value;
+      cb.checked = saved.some(v=>normalize(v)===normalize(value));
+      cb.onchange = ()=>renderDynamicFilters(getCurrentSelections());
+
+      label.append(cb,document.createTextNode(formatValueByHeader(value,view.headers[col])));
+      list.append(label);
+    });
+
+    card.append(list);
+    box.append(card);
+
+    // Điều kiện hiện tại sẽ giới hạn danh sách của cột kế tiếp.
+    if(saved.length){
+      previousConditions.push({col,selected:saved,priority:index+1});
+    }
+  });
+}
+
+function getUniqueValues(rows,col){
+  let map = new Map();
+
+  (rows || []).forEach(r=>{
+    let v = String(r[col] ?? "").trim();
+    if(v !== ""){
+      let key = normalize(v);
+      if(!map.has(key)) map.set(key,v);
+    }
+  });
+
+  const naturalCollator = new Intl.Collator("vi",{
+    numeric:true,
+    sensitivity:"base",
+    ignorePunctuation:false
+  });
+
+  return [...map.values()].sort((a,b)=>naturalCollator.compare(a,b));
+}
+
+function updateSelectedCount(card){
+  let n = card.querySelectorAll(".value-option input:checked").length;
+  let count = card.querySelector('[data-count="1"]');
+  if(count) count.textContent = "Đã chọn: " + n + " giá trị";
+}
+
+/* =========================
+   THU THẬP ĐIỀU KIỆN LỌC
+========================= */
+function collectFilterConditions(){
+  let conditions = [];
+
+  document.querySelectorAll(".filter-card").forEach(card=>{
+    let col = Number(card.dataset.col);
+    let selected = [...card.querySelectorAll(".value-option input:checked")].map(x=>x.value);
+    let priority = Number(card.querySelector(".priority").value);
+
+    if(selected.length) conditions.push({col,selected,priority});
+  });
+
+  conditions.sort((a,b)=>a.priority-b.priority);
+  return conditions;
+}
+
+function getFilteredRows(sheet,conditions){
+  return getFilterDataRows(sheet).filter(row=>{
+    return conditions.every(c=>{
+      let value = String(row[c.col] ?? "").trim();
+      return c.selected.some(x=>normalize(x) === normalize(value));
+    });
+  });
+}
+
+/* =========================
+   LỌC THÔNG THƯỜNG
+   Giữ nguyên thứ tự cột Excel
+========================= */
+function applyFilters(){
+  let sheet = getSelectedSheet();
+  if(!sheet) return alert("Chưa chọn sheet.");
+  if(!selectedColumns.length) return alert("Hãy chọn cột cần lọc.");
+
+  let conditions = collectFilterConditions();
+  if(!conditions.length) return alert("Hãy chọn ít nhất một giá trị lọc.");
+
+  let result = getFilteredRows(sheet,conditions);
+  let view = getFilterSheetView(sheet);
+
+  currentResult = {
+    headers:view.headers.slice(),
+    rows:result,
+    sheetName:sheet.name,
+    special:false,
+    fixedCount:0
+  };
+
+  showFilterResult(currentResult);
+}
+
+/* =========================
+   LỌC ĐẶC BIỆT
+========================= */
+function openSpecialFilter(){
+  let sheet = getSelectedSheet();
+  if(!sheet) return alert("Chưa chọn sheet.");
+  if(!selectedColumns.length) return alert("Hãy chọn cột cần lọc.");
+  let conditions = collectFilterConditions();
+  if(!conditions.length) return alert("Hãy chọn ít nhất một giá trị lọc trước.");
+  let view = getFilterSheetView(sheet);
+  const hideBox=document.getElementById("hideColumnSelection");
+  const classifyBox=document.getElementById("classifyColumnSelection");
+  hideBox.innerHTML=""; classifyBox.innerHTML="";
+  document.getElementById("specialSerialNumber").value="yes";
+  classificationColumns=[];
+  const buildOption=(container,i,kind)=>{
+    const label=document.createElement("label");
+    const cb=document.createElement("input");cb.type="checkbox";cb.value=i;
+    if(kind==="classify") cb.onchange=()=>{
+      if(cb.checked){if(!classificationColumns.includes(i))classificationColumns.push(i);}
+      else classificationColumns=classificationColumns.filter(x=>x!==i);
+      renderClassificationColumnChoices(view.headers);
+    };
+    label.append(cb,document.createTextNode(String(view.headers[i]||("Cột "+(i+1)))));
+    container.append(label);
+  };
+  getAlphabeticalColumnIndexes(view.headers).forEach(i=>{
+    buildOption(hideBox,i,"hide");
+    buildOption(classifyBox,i,"classify");
+  });
+  let fixedInput=document.getElementById("fixedColumnCount");
+  fixedInput.value=1; fixedInput.max=view.headers.length;
+  document.getElementById("fixedRowCount").value=1;
+  document.getElementById("specialOptions").classList.remove("hidden");
+  document.getElementById("specialOptions").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function renderClassificationColumnChoices(headers){
+  const box=document.getElementById("classifyColumnSelection");
+  if(!box)return;
+  const collator=new Intl.Collator("vi",{numeric:true,sensitivity:"base"});
+  const entries=[...box.querySelectorAll("label")].map(label=>({label,cb:label.querySelector("input")}));
+  entries.sort((a,b)=>collator.compare(headers[Number(a.cb.value)]||"",headers[Number(b.cb.value)]||""));
+  entries.forEach(({label,cb})=>{
+    const idx=Number(cb.value),rank=classificationColumns.indexOf(idx);
+    let badge=label.querySelector(".classify-rank");
+    if(!badge){badge=document.createElement("span");badge.className="classify-rank";label.append(badge);}
+    badge.textContent=rank>=0?" — "+(rank+1):"";
+  });
+  // Sắp xếp alphabet vẫn giữ nguyên thứ tự ưu tiên được ghi bằng số.
+}
+
+function closeSpecialFilter(){
+  document.getElementById("specialOptions").classList.add("hidden");
+}
+
+function applySpecialFilters(){
+  let sheet=getSelectedSheet();if(!sheet)return alert("Chưa chọn sheet.");
+  let conditions=collectFilterConditions();if(!conditions.length)return alert("Hãy chọn ít nhất một giá trị lọc.");
+  let result=getFilteredRows(sheet,conditions),view=getFilterSheetView(sheet);
+  let hiddenColumns=[...document.querySelectorAll("#hideColumnSelection input:checked")].map(x=>Number(x.value));
+  let priorityColumns=conditions.map(c=>c.col);
+  let orderedColumns=[...priorityColumns,...view.headers.map((h,i)=>i).filter(i=>!priorityColumns.includes(i))];
+  let visibleColumns=orderedColumns.filter(i=>!hiddenColumns.includes(i));
+  if(!visibleColumns.length)return alert("Bạn đã chọn ẩn tất cả các cột. Vui lòng bỏ chọn ít nhất một cột.");
+  let newHeaders=visibleColumns.map(i=>view.headers[i]);
+  let addSerialNumber=document.getElementById("specialSerialNumber").value==="yes";
+  if(addSerialNumber)newHeaders.unshift("STT");
+  let fixedInput=document.getElementById("fixedColumnCount");
+  let fixedCount=parseInt(fixedInput.value,10);if(!Number.isFinite(fixedCount)||fixedCount<0)fixedCount=0;
+  fixedCount=Math.min(fixedCount,newHeaders.length);
+  let fixedRowCount=parseInt(document.getElementById("fixedRowCount").value,10);
+  if(!Number.isFinite(fixedRowCount)||fixedRowCount<0)fixedRowCount=0;
+  fixedRowCount=Math.min(fixedRowCount,result.length);
+  const instructions=readColumnInstructions(view);
+  const groups=classificationColumns.slice();
+  const resultRows=groups.length
+    ? buildHierarchicalClassification(result,view.headers,visibleColumns,groups,instructions,addSerialNumber)
+    : result.map((row,index)=>{
+        const calculated=applyRowInstructions(row,instructions);
+        return {type:"data",values:(addSerialNumber?[index+1]:[]).concat(visibleColumns.map(i=>calculated[i]??"")),source:row};
+      });
+  currentResult={headers:newHeaders,rows:resultRows,sheetName:sheet.name,special:true,addSerialNumber,fixedCount,fixedRowCount,
+    sourceHeaders:view.headers.slice(),sourceRows:result,visibleColumns,classificationColumns:groups,instructions};
+  closeSpecialFilter();showFilterResult(currentResult);
+}
+
+function excelColumnIndex(token){
+  const letters=String(token||"").toUpperCase().replace(/[^A-Z]/g,"");
+  if(!letters)return -1;let n=0;for(const ch of letters)n=n*26+ch.charCodeAt(0)-64;return n-1;
+}
+function readColumnInstructions(view){
+  const headers=view.headers||[];
+  const sourceIndexes=Array.isArray(view.columnIndexes)&&view.columnIndexes.length
+    ? view.columnIndexes.map((v,i)=>Number.isFinite(Number(v))?Number(v):i)
+    : headers.map((_,i)=>i);
+  // Ký hiệu chữ (A, M, X...) ưu tiên địa chỉ cột Excel gốc; số (1, 2...)
+  // là thứ tự cột trong bảng dữ liệu đang hiển thị. Nếu không khớp, thử số cột Excel gốc.
+  const resolveColumn=(token)=>{
+    const t=String(token||"").trim().toUpperCase();
+    if(/^\d+$/.test(t)){
+      const n=Number(t)-1;
+      if(n>=0&&n<headers.length)return n;
+      return sourceIndexes.indexOf(n);
+    }
+    const ordinal=excelColumnIndex(t);
+    if(ordinal<0)return -1;
+    const original=sourceIndexes.indexOf(ordinal);
+    if(original>=0)return original;
+    return ordinal<headers.length?ordinal:-1;
+  };
+  return headers.map((h,i)=>{
+    const raw=String((view.instructionRow||[])[i]??"").trim();
+    if(!raw)return null;
+    const compact=normalize(raw).replace(/\s+/g,"");
+    if(compact==="cong")return {type:"sum",raw};
+    if(compact==="dem")return {type:"count",raw};
+    // Đọc công thức ở ô ngay phía trên tiêu đề đích.
+    const m=raw.match(/^\s*cột\s*\$?([a-z]{1,3}|\d+)\s*([+\-*/x×:÷])\s*cột\s*\$?([a-z]{1,3}|\d+)\s*$/i);
+    if(m){
+      const a=resolveColumn(m[1]),b=resolveColumn(m[3]);
+      if(a<0||b<0)return {type:"invalid",raw,reason:`Không tìm thấy cột nguồn ${a<0?m[1]:m[3]} trong dữ liệu đã nhập`};
+      const op=m[2].toLowerCase();
+      const type=(op==="/"||op===":"||op==="÷")?"divide":((op==="*"||op==="x"||op==="×")?"multiply":(op==="+"?"add":"subtract"));
+      return {type,a,b,raw};
+    }
+    return null;
+  });
+}
+function calculateInstructionValue(row,rule){
+  if(!rule||!['multiply','divide','add','subtract'].includes(rule.type))return undefined;
+  const a=parseNumber(row?.[rule.a]),b=parseNumber(row?.[rule.b]);
+  if(a===null||b===null)return "";
+  if(rule.type==="divide")return b===0?"-":a/b;
+  if(rule.type==="multiply")return a*b;
+  return rule.type==="add"?a+b:a-b;
+}
+function applyRowInstructions(row,instructions){
+  const result=(row||[]).slice();
+  (instructions||[]).forEach((rule,targetIndex)=>{
+    if(rule?.type==="multiply"||rule?.type==="divide"||rule?.type==="add"||rule?.type==="subtract"){
+      // Tính từ hàng nguồn ban đầu để thứ tự cột đích không ảnh hưởng kết quả.
+      result[targetIndex]=calculateInstructionValue(row,rule);
+    }else if(rule?.type==="invalid"){
+      result[targetIndex]="-";
+    }
+  });
+  return result;
+}
+function instructionSummary(headers,rows,instructions){
+  return headers.map((h,i)=>{
+    const rule=instructions&&instructions[i];if(!rule)return "";
+    if(rule.type==="invalid")return "-";
+    if(rule.type==="count")return formatValueByHeader(rows.filter(r=>String(r[i]??"").trim()!=="").length,h);
+    if(rule.type==="sum"){
+      const vals=rows.map(r=>parseNumber(r[i])).filter(v=>v!==null);
+      return vals.length?formatValueByHeader(vals.reduce((a,b)=>a+b,0),h):"";
+    }
+    if(rule.type==="multiply"||rule.type==="add"||rule.type==="subtract"){
+      let total=0,found=false;
+      rows.forEach(r=>{
+        const value=calculateInstructionValue(r,rule);
+        if(value===null||value===""||value==="-"||!Number.isFinite(Number(value)))return;
+        total+=Number(value);found=true;
+      });
+      return found?formatValueByHeader(total,h):"";
+    }
+    if(rule.type==="divide"){
+      // Tỷ lệ ở dòng tổng hợp được tính bằng tổng tử số / tổng mẫu số
+      // của chính nhóm; không cộng các tỷ lệ từng dòng gây sai lệch bình quân.
+      let numerator=0,denominator=0,found=false;
+      rows.forEach(r=>{
+        const a=parseNumber(r[rule.a]),b=parseNumber(r[rule.b]);
+        if(a===null||b===null)return;
+        numerator+=a;denominator+=b;found=true;
+      });
+      if(!found)return "";
+      if(denominator===0)return "-";
+      return formatValueByHeader(numerator/denominator,h);
+    }
+    return "";
+  });
+}
+// Gộp các cột đầu chỉ khi chúng không chứa dữ liệu số và không có phép tính.
+// Dừng trước cột số đầu tiên để không làm mất kết quả cần hiển thị.
+function getSubtotalMergeCount(resultData){
+  if(!resultData)return 1;
+  const offset=resultData.addSerialNumber?1:0;
+  const visible=resultData.visibleColumns||[];
+  const rules=resultData.instructions||[];
+  const sourceRows=resultData.sourceRows||[];
+  let mergeCount=offset;
+  for(let j=0;j<visible.length;j++){
+    const sourceIndex=visible[j];
+    if(rules[sourceIndex])break;
+    const hasNumeric=sourceRows.some(row=>{
+      const value=row?.[sourceIndex];
+      return value!==null&&value!==undefined&&String(value).trim()!==""&&parseNumber(value)!==null;
+    });
+    if(hasNumeric)break;
+    mergeCount=offset+j+1;
+  }
+  return Math.max(1,Math.min(resultData.headers?.length||offset+visible.length,mergeCount));
+}
+function mapInstructionSummary(headers,rows,instructions,visibleColumns,addSerial){
+  const full=instructionSummary(headers,rows,instructions);
+  return (addSerial?[""]:[]).concat(visibleColumns.map(i=>full[i]??""));
+}
+function buildHierarchicalClassification(rows,headers,visibleColumns,groupColumns,instructions,addSerial){
+  const output=[];
+  let serial=0;
+  const displayRow=(r)=>{
+    const calculated=applyRowInstructions(r,instructions);
+    return {
+      type:"data",
+      values:(addSerial?[++serial]:[]).concat(visibleColumns.map(i=>calculated[i]??"")),
+      source:r
+    };
+  };
+  const recurse=(subset,level)=>{
+    const col=groupColumns[level];
+    const groups=new Map();
+    subset.forEach(r=>{
+      const raw=String(r[col]??"").trim();
+      const key=raw||"(Trống)";
+      if(!groups.has(key))groups.set(key,[]);
+      groups.get(key).push(r);
+    });
+    const collator=new Intl.Collator("vi",{numeric:true,sensitivity:"base"});
+    [...groups.keys()].sort(collator.compare).forEach(key=>{
+      const members=groups.get(key);
+      if(level+1<groupColumns.length){
+        recurse(members,level+1);
+      }else{
+        members.forEach(r=>output.push(displayRow(r)));
+      }
+      // Tổng cấp hiện tại được tính từ các dòng nguồn của chính nhóm,
+      // tuyệt đối không cộng lại các dòng tổng của cấp con.
+      const sourceSummary=instructionSummary(headers,members,instructions);
+      const indent="　".repeat(level);
+      output.push({
+        type:"subtotal",
+        label:`${indent}Cộng ${headers[col]}: ${key}`,
+        values:(addSerial?[""]:[]).concat(visibleColumns.map(i=>sourceSummary[i]??"")),
+        level
+      });
+    });
+  };
+  if(groupColumns.length)recurse(rows,0);
+  const company=instructionSummary(headers,rows,instructions);
+  output.push({
+    type:"grandtotal",
+    label:"Cộng Công ty",
+    values:(addSerial?[""]:[]).concat(visibleColumns.map(i=>company[i]??""))
+  });
+  return output;
+}
+
+/* =========================
+   BỎ CHỌN ĐIỀU KIỆN
+========================= */
+function resetFilters(){
+  document.querySelectorAll(".filter-card input[type=checkbox]").forEach(x=>x.checked=false);
+
+  document.querySelectorAll(".filter-card [data-count]").forEach(x=>{
+    x.textContent = "Đã chọn: 0 giá trị";
+  });
+
+  document.getElementById("filterFields").innerHTML = "";
+
+  document.getElementById("columnSelection")
+    .querySelectorAll("input[type=checkbox]").forEach(x=>x.checked=false);
+
+  document.getElementById("specialOptions").classList.add("hidden");
+  document.getElementById("hideColumnSelection").innerHTML = "";
+
+  selectedColumns = [];
+  classificationColumns = [];
+}
+
+/* =========================
+   BẢNG KẾT QUẢ
+========================= */
+function showFilterResult(data){
+  returnPage = "search";
+
+  let modeText = "LỌC ĐIỀU KIỆN";
+
+  let specialNote = "";
+  if(data.special){
+    specialNote = `
+      <p class="note">
+        Các cột điều kiện được đưa lên đầu bảng. ${data.addSerialNumber ? "Đã thêm STT." : "Không thêm STT."}
+        Số dòng cố định phía trên: <b>${data.fixedRowCount??1}</b>; số cột cố định bên trái: <b>${data.fixedCount}</b>.
+        ${data.classificationColumns?.length ? "Thứ tự phân loại: "+data.classificationColumns.map(i=>escapeHTML(data.sourceHeaders[i])).join(" → ")+"." : "Không phân loại nhiều cấp."}
+      </p>
+    `;
+  }
+
+  let html = `
+    <div class="full-head">
+      <b>KẾT QUẢ ${modeText}: ${escapeHTML(data.sheetName)}</b>
+      <button class="action gray small" onclick="closeFull()">Quay lại</button>
+    </div>
+    <div class="panel">
+      <div class="row">
+        <div class="stat">Số dòng dữ liệu: ${data.rows.filter(r=>r.type==="data").length}</div>
+        <button class="action yellow" onclick="backToFilter()">Bỏ lọc</button>
+      </div>
+      <div class="row">
+        <button class="action purple" onclick="exportFilteredExcel()">Xuất Excel</button>
+        <button class="action green" onclick="saveFilteredTableToApp()">Nhập bảng này vào app</button>
+      </div>
+      ${specialNote}
+      <p class="note">Chạm vào một dòng để đánh dấu màu khi đối chiếu dữ liệu.</p>
+      <div class="table-wrap">
+        ${renderTable(data.headers,data.rows,true,data.special,data.fixedCount,data)}
+      </div>
+    </div>
+  `;
+
+  showFull(html);
+}
+
+function selectTableRow(row){
+  let tbody = row.parentElement;
+  if(!tbody) return;
+
+  tbody.querySelectorAll("tr.selected-row").forEach(x=>{
+    x.classList.remove("selected-row");
+  });
+
+  row.classList.add("selected-row");
+}
+
+function exportFilteredExcel(){
+  if(!currentResult) return alert("Chưa có kết quả lọc để xuất.");
+  if(typeof XLSX === "undefined") return alert("Không tải được thư viện Excel. Kiểm tra Internet.");
+
+  try{
+    let wb = XLSX.utils.book_new();
+    let aoa=[currentResult.headers];
+    const merges=[];
+    (currentResult.rows||[]).forEach(r=>{
+      if(r.type==="data")aoa.push(formatResultRowValues(r.values,currentResult.headers,currentResult));
+      else if(r.type==="group")aoa.push([r.label]);
+      else if(r.type==="subtotal"||r.type==="grandtotal"){
+        const vals=r.values||[];
+        const mergeCount=getSubtotalMergeCount(currentResult);
+        const rowIndex=aoa.length;
+        const out=Array(currentResult.headers.length).fill("");
+        if(mergeCount>1){
+          out[0]=r.label||"";
+          for(let i=mergeCount;i<out.length;i++)out[i]=formatValueByHeader(vals[i],resultHeaderForCell(currentResult,currentResult.headers,i));
+          merges.push({s:{r:rowIndex,c:0},e:{r:rowIndex,c:mergeCount-1}});
+        }else{
+          out[0]=String(r.label||"")+(vals[0]!==""&&vals[0]!==undefined?" — "+String(vals[0]):"");
+          for(let i=1;i<out.length;i++)out[i]=formatValueByHeader(vals[i],resultHeaderForCell(currentResult,currentResult.headers,i));
+        }
+        aoa.push(out);
+      }
+      else if(Array.isArray(r))aoa.push(r.map((v,i)=>formatValueByHeader(v,currentResult.headers[i])));
+      else aoa.push((r.values||[]).map((v,i)=>formatValueByHeader(v,currentResult.headers[i])));
+    });
+    if(!currentResult.classificationColumns?.length && currentResult.rows?.length){
+      const summary=mapInstructionSummary(currentResult.sourceHeaders,currentResult.sourceRows,currentResult.instructions,currentResult.visibleColumns,currentResult.addSerialNumber);
+      const mergeCount=getSubtotalMergeCount(currentResult);
+      const rowIndex=aoa.length;
+      const out=Array(currentResult.headers.length).fill("");
+      if(mergeCount>1){
+        out[0]="Cộng Công ty";
+        for(let i=mergeCount;i<out.length;i++)out[i]=summary[i]??"";
+        merges.push({s:{r:rowIndex,c:0},e:{r:rowIndex,c:mergeCount-1}});
+      }else{
+        out[0]="Cộng Công ty"+(summary[0]!==""&&summary[0]!==undefined?" — "+String(summary[0]):"");
+        for(let i=1;i<out.length;i++)out[i]=summary[i]??"";
+      }
+      aoa.push(out);
+    }
+
+    let ws = XLSX.utils.aoa_to_sheet(aoa);
+    if(merges.length)ws["!merges"]=merges;
+    XLSX.utils.book_append_sheet(wb,ws,"KetQuaLoc");
+
+    let suffix = "LocDieuKien";
+    XLSX.writeFile(wb,"Lan_CSLN_"+suffix+".xlsx");
+  }catch(e){
+    alert("Không thể xuất kết quả Excel: " + e.message);
+  }
+}
+async function saveFilteredTableToApp(){
+  if(!currentResult) return alert("Chưa có bảng kết quả để nhập vào ứng dụng.");
+  const suggested="Bang_moi_"+new Date().toISOString().slice(0,10);
+  const name=prompt("Đặt tên cho bảng dữ liệu mới để lưu vào ứng dụng:",suggested);
+  if(name===null)return;
+  const cleanName=name.trim();
+  if(!cleanName)return alert("Tên bảng không được để trống.");
+  try{
+    const rawRows=[currentResult.headers.slice()];
+    (currentResult.rows||[]).forEach(r=>{
+      if(r.type==="data") rawRows.push((r.values||[]).slice());
+      else if(r.type==="group") rawRows.push([r.label||""]);
+      else if(r.type==="subtotal"||r.type==="grandtotal"){
+        const vals=r.values||[];const out=Array(currentResult.headers.length).fill("");
+        const mergeCount=getSubtotalMergeCount(currentResult);
+        if(mergeCount>1){out[0]=r.label||"";for(let i=mergeCount;i<out.length;i++)out[i]=vals[i]??"";}
+        else{out[0]=String(r.label||"")+(vals[0]!==""&&vals[0]!==undefined?" — "+String(vals[0]):"");for(let i=1;i<out.length;i++)out[i]=vals[i]??"";}
+        rawRows.push(out);
+      }else if(Array.isArray(r))rawRows.push(r.slice());
+      else rawRows.push((r.values||[]).slice());
+    });
+    await saveRecord({name:cleanName,type:"excel",sheets:[{name:"KetQuaLoc",headers:currentResult.headers.slice(),rows:rawRows.slice(1),rawRows,columnIndexes:currentResult.headers.map((_,i)=>i)}],visible:true,created:new Date().toISOString(),derivedFrom:currentResult.sheetName||"Kết quả lọc"});
+    alert("Đã lưu bảng mới vào ứng dụng với tên: "+cleanName);
+    await refreshOverview();
+  }catch(e){alert("Không thể lưu bảng vào ứng dụng: "+e.message);}
+}
+
+function backToFilter(){
+  closeFull();
+  document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
+  document.getElementById("search").classList.remove("hidden");
+  document.getElementById("filterBox").classList.remove("hidden");
+  document.getElementById("findBox").classList.add("hidden");
+  document.getElementById("mainNav").classList.remove("hidden");
+  document.getElementById("searchType").value = "filter";
+}
+
+/* =========================
+   TÌM KIẾM THỦ CÔNG
+========================= */
+async function searchSuggestions(){
+  let q = document.getElementById("searchInput").value.trim();
+  let box = document.getElementById("suggestions");
+  box.innerHTML = "";
+  if(!q) return;
+
+  let all = await getAll();
+  let items = all.filter(f=>f.type === "manual" && f.visible !== false);
+  let nq = normalize(q);
+
+  let matches = items.map(f=>{
+    let title = f.title || f.name || "";
+    let content = f.content || "";
+    let nt = normalize(title), nc = normalize(content);
+    let score = 0;
+
+    if(title.toLowerCase() === q.toLowerCase()) score = 100;
+    else if(nt === nq) score = 95;
+    else if(nt.startsWith(nq)) score = 85;
+    else if(nt.includes(nq)) score = 75;
+    else if(nc.includes(nq)) score = 60;
+    else{
+      let words = nq.split(/\s+/).filter(Boolean);
+      let hits = words.filter(w=>nt.includes(w) || nc.includes(w)).length;
+      if(hits) score = 30*hits/words.length;
+    }
+
+    return {f,score};
+  }).filter(x=>x.score > 0).sort((a,b)=>b.score-a.score);
+
+  matches.slice(0,30).forEach(({f})=>{
+    let div = document.createElement("div");
+    div.className = "suggestion";
+
+    let b = document.createElement("b");
+    b.textContent = f.title || f.name;
+
+    let sm = document.createElement("small");
+    sm.textContent = (f.content || "").slice(0,120);
+
+    div.append(b,sm);
+    div.onclick = ()=>showManualDetail(f.id);
+    box.append(div);
+  });
+
+  if(!matches.length){
+    box.innerHTML = '<div class="suggestion">Không tìm thấy dữ liệu.</div>';
+  }
+}
+
+async function showManualDetail(id){
+  let all = await getAll();
+  currentFile = all.find(f=>f.id === id);
+  if(!currentFile) return;
+
+  returnPage = "search";
+
+  showFull(`
+    <div class="full-head">
+      <b>CHI TIẾT DỮ LIỆU</b>
+      <button class="action gray small" onclick="closeFull()">Quay lại</button>
+    </div>
+    <div class="panel">
+      <label>Tiêu đề</label>
+      <input id="detailTitle" disabled value="${escapeAttr(currentFile.title || currentFile.name)}">
+      <label>Nội dung</label>
+      <textarea id="detailContent" disabled>${escapeHTML(currentFile.content || "")}</textarea>
+      <button class="action purple" onclick="editManualDetail()">Sửa</button>
+      <button class="action green" onclick="saveManualDetail()">Lưu</button>
+      <button class="action red" onclick="deleteManualDetail()">Xóa</button>
+    </div>
+  `);
+}
+
+function editManualDetail(){
+  document.getElementById("detailTitle").disabled = false;
+  document.getElementById("detailContent").disabled = false;
+}
+
+async function saveManualDetail(){
+  let title = document.getElementById("detailTitle").value.trim();
+  if(!title) return alert("Tiêu đề không được để trống.");
+
+  currentFile.title = title;
+  currentFile.name = title;
+  currentFile.content = document.getElementById("detailContent").value;
+
+  try{
+    await saveRecord(currentFile);
+    alert("Đã lưu.");
+    await showManualDetail(currentFile.id);
+  }catch(e){
+    alert("Không thể lưu: " + e.message);
+  }
+}
+
+async function deleteManualDetail(){
+  if(!currentFile || !confirm("Xóa dữ liệu này?")) return;
+
+  try{
+    await deleteRecord(currentFile.id);
+    currentFile = null;
+    closeFull();
+    await searchSuggestions();
+    await refreshOverview();
+  }catch(e){
+    alert("Không thể xóa dữ liệu: " + e.message);
+  }
+}
+
+/* =========================
+   HIỂN THỊ BẢNG
+========================= */
+function calculateResultSummary(headers,rows){
+  // Không tự suy đoán phép tính theo tên cột; chỉ tính theo chỉ dẫn Excel.
+  return headers.map(()=>"");
+}
+let decimalTableSequence=0;
+function decimalSelectOptions(selected){
+  return [0,1,2,3,4].map(n=>`<option value="${n}" ${Number(selected)===n?"selected":""}>${n} chữ số</option>`).join("");
+}
+function updateTableDecimalMode(tableId){
+  const root=document.getElementById(tableId+"_tools");
+  const table=document.getElementById(tableId);
+  if(!root||!table)return;
+  const mode=root.querySelector('[data-role="decimal-mode"]').value;
+  root.querySelector('[data-role="decimal-global"]').style.display=mode==="all"?"inline-block":"none";
+  root.querySelectorAll('[data-role="decimal-column"]').forEach(x=>x.style.display=mode==="each"?"inline-block":"none");
+  applyTableDecimalSettings(tableId);
+}
+function applyTableDecimalSettings(tableId){
+  const root=document.getElementById(tableId+"_tools");
+  const table=document.getElementById(tableId);
+  if(!root||!table)return;
+  const mode=root.querySelector('[data-role="decimal-mode"]').value;
+  const globalDigits=Number(root.querySelector('[data-role="decimal-global"]').value);
+  const perColumn={};
+  root.querySelectorAll('[data-role="decimal-column"]').forEach(x=>perColumn[x.dataset.col]=Number(x.value));
+  table.querySelectorAll('td[data-raw-value]').forEach(td=>{
+    const raw=td.getAttribute('data-raw-value')??"";
+    const header=td.getAttribute('data-format-header')??"";
+    const col=td.getAttribute('data-col-index')??"0";
+    const digits=mode==="all"?globalDigits:(mode==="each"?(perColumn[col]??decimalPlacesForHeader(header)):decimalPlacesForHeader(header));
+    const n=parseNumber(raw);
+    const value=n===null?String(raw):new Intl.NumberFormat("vi-VN",{minimumFractionDigits:digits,maximumFractionDigits:digits,useGrouping:true}).format(roundExcel(n,digits));
+    if(td.isContentEditable){
+      td.textContent=value;
+      td.setAttribute('data-display-value',value);
+    }else td.textContent=value;
+  });
+}
+function renderTableDecimalTools(tableId,headers){
+  const cols=headers.map((h,i)=>`<label style="display:inline-flex;align-items:center;gap:4px;margin:3px 8px 3px 0;font-size:12px;white-space:nowrap">${escapeHTML(h||("Cột "+(i+1)))} <select data-role="decimal-column" data-col="${i}" style="display:none;padding:4px;border:1px solid #bbb;border-radius:6px" onchange="applyTableDecimalSettings('${tableId}')" style="padding:4px;border:1px solid #bbb;border-radius:6px">${decimalSelectOptions(decimalPlacesForHeader(h))}</select></label>`).join("");
+  return `<div id="${tableId}_tools" class="decimal-table-tools" style="display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px;margin:0 0 8px;background:#f3f6f3;border:1px solid #cbd5cb;border-radius:8px;color:#183b25"><b style="font-size:13px">Điều chỉnh số thập phân:</b><select data-role="decimal-mode" onchange="updateTableDecimalMode('${tableId}')" style="padding:6px;border:1px solid #aaa;border-radius:6px"><option value="header">Theo tiêu đề cột</option><option value="each">Riêng từng cột</option><option value="all">Đồng loạt cả bảng</option></select><select data-role="decimal-global" onchange="applyTableDecimalSettings('${tableId}')" style="display:none;padding:6px;border:1px solid #aaa;border-radius:6px">${decimalSelectOptions(2)}</select><div style="display:flex;flex-wrap:wrap;align-items:center">${cols}</div></div>`;
+}
+
+function renderTable(headers,rows,summary=false,special=false,fixedCount=0,resultData=null,editable=false,formatHeaders=null){
+  if(!headers||!headers.length)return "<p>Không có dữ liệu.</p>";
+  let tableClass=special?"special-table":"";
+  const tableId="decimalTable_"+(++decimalTableSequence);
+  // Ước lượng độ rộng từng cột theo nội dung dài nhất, giới hạn để bảng gọn và dễ đọc.
+  const columnWidths=headers.map((h,i)=>{
+    let maxLen=String(h??"").length;
+    (rows||[]).forEach(r=>{const a=r?.values|| (Array.isArray(r)?r:[]);maxLen=Math.max(maxLen,String(a[i]??"").length);});
+    return Math.max(48,Math.min(360,maxLen*8+18));
+  });
+  let leftOffsets=[];let runningLeft=0;columnWidths.forEach(w=>{leftOffsets.push(runningLeft);runningLeft+=w;});
+  let html=renderTableDecimalTools(tableId,headers)+`<table class="${tableClass}" id="${tableId}" data-editable="${editable?"1":"0"}"><colgroup>`;
+  columnWidths.forEach(w=>html+=`<col style="width:${w}px;max-width:${w}px">`);
+  html+=`</colgroup><thead><tr>`;
+  headers.forEach((h,i)=>{let fc=special&&i<fixedCount?"fixed-col":"";let left=special&&i<fixedCount?`left:${leftOffsets[i]}px;`:"";html+=`<th class="${fc}" style="${left}width:${columnWidths[i]}px;max-width:${columnWidths[i]}px">${escapeHTML(h)}</th>`;});
+  html+="</tr></thead><tbody>";
+  let dataRowIndex=0;
+  (rows||[]).forEach((item,ri)=>{
+    if(item&&item.type==="group"){
+      html+=`<tr class="classification-group"><td colspan="${headers.length}">${escapeHTML(item.label)}</td></tr>`;return;
+    }
+    if(item&&(item.type==="subtotal"||item.type==="grandtotal")){
+      const totalValues=item.values||[];
+      const mergeCount=getSubtotalMergeCount(resultData);
+      const totalHeader=(i)=>formatHeaders?.[i]??resultHeaderForCell(resultData,headers,i);
+      const totalValue=(i)=>formatValueByHeader(totalValues[i]??"",totalHeader(i));
+      html+='<tr class="classification-total">';
+      if(mergeCount>1){
+        const fc=special&&fixedCount>0?"fixed-col":"";
+        html+=`<td class="${fc}" colspan="${mergeCount}" style="${special&&fixedCount>0?"left:0px;":""}">${escapeHTML(String(item.label||""))}</td>`;
+        for(let i=mergeCount;i<headers.length;i++){
+          const fixed=special&&i<fixedCount?"fixed-col":"";
+          const left=special&&i<fixedCount?`left:${leftOffsets[i]}px;`:"";
+          html+=`<td class="${fixed}" data-raw-value="${escapeAttr(String(totalValues[i]??""))}" data-format-header="${escapeAttr(String(totalHeader(i)))}" data-col-index="${i}" style="${left}width:${columnWidths[i]}px;max-width:${columnWidths[i]}px">${escapeHTML(String(totalValue(i)))}</td>`;
+        }
+      }else{
+        headers.forEach((h,i)=>{
+          const fc=special&&i<fixedCount?"fixed-col":"";
+          const left=special&&i<fixedCount?`left:${leftOffsets[i]}px;`:"";
+          const value=totalValue(i);
+          const content=i===0?String(item.label)+(value!==""?" — "+String(value):""):String(value);
+          html+=i===0?`<td class="${fc}" style="${left}">${escapeHTML(content)}</td>`:`<td class="${fc}" data-raw-value="${escapeAttr(String(totalValues[i]??""))}" data-format-header="${escapeAttr(String(totalHeader(i)))}" data-col-index="${i}" style="${left}">${escapeHTML(content)}</td>`;
+        });
+      }
+      html+="</tr>";return;
+    }
+    const rawVals=item&&item.type==="data"?item.values:(Array.isArray(item)?item:[]);
+    // Mọi bảng dữ liệu đều đi qua cùng một bộ định dạng:
+    // - Bảng xem sheet: lấy tiêu đề gốc từ formatHeaders.
+    // - Bảng lọc thường: lấy tiêu đề đang hiển thị.
+    // - Bảng lọc đặc biệt: ánh xạ về đúng tiêu đề/cột nguồn, kể cả khi đổi thứ tự hoặc ẩn cột.
+    // - Bảng chỉnh sửa: chỉ định dạng phần hiển thị; giá trị gốc vẫn được giữ trong dữ liệu.
+    const vals=rawVals.map((v,i)=>{
+      const header=formatHeaders?.[i]??resultHeaderForCell(resultData,headers,i);
+      return formatValueByHeader(v,header);
+    });
+    const isFixedRow=!editable&&resultData&&dataRowIndex<Number(resultData.fixedRowCount??0);
+    const rowTop=isFixedRow?`top:${32+dataRowIndex*34}px;`:"";
+    html+=`<tr class="${isFixedRow?"fixed-data-row":""}" onclick="selectTableRow(this)">`;
+    headers.forEach((h,i)=>{let fc=special&&i<fixedCount?"fixed-col":"";let left=special&&i<fixedCount?`left:${leftOffsets[i]}px;`:"";
+      const value=vals[i]??"";
+      const rawValue=rawVals[i]??"";const formatHeader=formatHeaders?.[i]??resultHeaderForCell(resultData,headers,i);
+      html+=editable?`<td contenteditable="true" data-row="${ri}" data-col="${i}" data-col-index="${i}" data-raw-value="${escapeAttr(String(rawValue))}" data-format-header="${escapeAttr(String(formatHeader))}" data-display-value="${escapeHTML(String(value))}" oninput="this.setAttribute('data-raw-value',this.textContent)">${escapeHTML(value)}</td>`:`<td class="${fc}" data-col-index="${i}" data-raw-value="${escapeAttr(String(rawValue))}" data-format-header="${escapeAttr(String(formatHeader))}" style="${left}${rowTop}">${escapeHTML(value)}</td>`;
+    });html+="</tr>";
+    dataRowIndex++;
+  });
+  html+="</tbody>";
+  if(summary&&rows&&rows.length&&!resultData?.classificationColumns?.length&&resultData?.sourceHeaders){
+    const vals=mapInstructionSummary(resultData.sourceHeaders,resultData.sourceRows,resultData.instructions,resultData.visibleColumns,resultData.addSerialNumber);
+    const mergeCount=getSubtotalMergeCount(resultData);
+    html+='<tfoot><tr class="classification-total">';
+    if(mergeCount>1){
+      html+=`<td colspan="${mergeCount}">Cộng Công ty</td>`;
+      for(let i=mergeCount;i<headers.length;i++)html+=`<td data-raw-value="${escapeAttr(String(vals[i]??""))}" data-format-header="${escapeAttr(String(resultHeaderForCell(resultData,headers,i)))}" data-col-index="${i}">${escapeHTML(formatValueByHeader(vals[i]??"",resultHeaderForCell(resultData,headers,i)))}</td>`;
+    }else{
+      headers.forEach((h,i)=>{
+        const value=formatValueByHeader(vals[i]??"",resultHeaderForCell(resultData,headers,i));
+        const content=i===0?"Cộng Công ty"+(value!==""?" — "+String(value):""):String(value);
+        html+=i===0?`<td>${escapeHTML(content)}</td>`:`<td data-raw-value="${escapeAttr(String(vals[i]??""))}" data-format-header="${escapeAttr(String(resultHeaderForCell(resultData,headers,i)))}" data-col-index="${i}">${escapeHTML(content)}</td>`;
+      });
+    }
+    html+="</tr></tfoot>";
+  }
+  html+="</table>";return html;
+}
+
+/* =========================
+   SAO LƯU JSON
+========================= */
+async function exportJSON(){
+  try{
+    let all = await getAll();
+    let obj = {
+      application:"Lân_CSLN",
+      version:1,
+      exportDate:new Date().toISOString(),
+      records:all
+    };
+
+    downloadFile(
+      JSON.stringify(obj,null,2),
+      "Lan_CSLN_Backup.json",
+      "application/json;charset=utf-8"
+    );
+  }catch(e){
+    alert("Không thể sao lưu JSON: " + e.message);
+  }
+}
+
+/* =========================
+   SAO LƯU EXCEL
+========================= */
+async function exportExcel(){
+  if(typeof XLSX === "undefined"){
+    return alert("Không tải được thư viện Excel. Kiểm tra Internet.");
+  }
+
+  let all = await getAll();
+  if(!all.length) return alert("Chưa có dữ liệu.");
+
+  try{
+    let wb = XLSX.utils.book_new();
+
+    all.forEach(f=>{
+      if(f.type === "manual"){
+        let ws = XLSX.utils.aoa_to_sheet([
+          ["Tiêu đề","Nội dung"],
+          [f.title || f.name,f.content || ""]
+        ]);
+        XLSX.utils.book_append_sheet(wb,ws,uniqueSheetName(wb,f.name));
+      }else{
+        (Array.isArray(f.sheets) ? f.sheets : []).forEach(s=>{
+          let ws = XLSX.utils.aoa_to_sheet(
+            Array.isArray(s.rawRows)&&s.rawRows.length ? s.rawRows : [s.headers || [], ...(s.rows || [])]
+          );
+          XLSX.utils.book_append_sheet(
+            wb,ws,uniqueSheetName(wb,f.name+"_"+s.name)
+          );
+        });
+      }
+    });
+
+    if(!wb.SheetNames.length) return alert("Không có bảng dữ liệu để xuất.");
+    XLSX.writeFile(wb,"Lan_CSLN_Backup.xlsx");
+  }catch(e){
+    alert("Không thể xuất Excel: " + e.message);
+  }
+}
+
+function uniqueSheetName(wb,name){
+  let base = String(name || "DuLieu")
+    .replace(/[\\/?*[\]:]/g,"_")
+    .slice(0,25) || "DuLieu";
+
+  let result = base;
+  let n = 1;
+
+  while(wb.SheetNames.includes(result)){
+    result = (base.slice(0,25)+n).slice(0,31);
+    n++;
+  }
+
+  return result;
+}
+
+/* =========================
+   TOÀN MÀN HÌNH
+========================= */
+function showFull(html){
+  let box = document.getElementById("fullScreen");
+  box.innerHTML = html;
+  box.classList.remove("hidden");
+  document.getElementById("mainNav").classList.add("hidden");
+  document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
+  window.scrollTo(0,0);
+}
+
+function closeFull(refresh=true){
+  let box = document.getElementById("fullScreen");
+  box.classList.add("hidden");
+  box.innerHTML = "";
+
+  document.getElementById("mainNav").classList.remove("hidden");
+  document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
+
+  let target = document.getElementById(returnPage || "overview");
+  if(!target) target = document.getElementById("overview");
+  target.classList.remove("hidden");
+
+  if(refresh && db){
+    if(returnPage === "overview") refreshOverview();
+  }
+}
+
+
+/* =========================
+   XEM KHU CẠO - LƯU RIÊNG, KHÔNG THAY ĐỔI INDEXEDDB
+========================= */
+const KC_STORAGE_KEY = "QLVC_CSKD_KHUCAO_V1";
+const KC_MODES = ["D3","D4"];
+const KC_AREAS = ["A","B","C","D","E"];
+let kcSelectedDate = "";
+let kcSettings = null;
+let kcHideIncomplete = false;
+
+function kcToday(){
+    const d = new Date();
+    return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+}
+function kcDefaultSettings(){
+    const teams = {};
+    ["1","2"].forEach(team=>{
+        teams[team] = Array.from({length:13},()=>({group:"-",mode:""}));
+    });
+    return {baseDate:kcToday(),teams,overrides:{}};
+}
+function kcLoadSettings(){
+    try{
+        const saved = JSON.parse(localStorage.getItem(KC_STORAGE_KEY) || "null");
+        const def = kcDefaultSettings();
+        if(!saved || typeof saved !== "object") return def;
+        const result = {...def,...saved};
+        result.teams = result.teams || def.teams;
+        ["1","2"].forEach(team=>{
+            const rows = Array.isArray(result.teams[team]) ? result.teams[team] : [];
+            result.teams[team] = Array.from({length:13},(_,i)=>{
+                const r = rows[i] || {};
+                return {group:String(r.group ?? "-"),mode:KC_MODES.includes(r.mode)?r.mode:""};
+            });
+        });
+        if(!result.overrides || typeof result.overrides !== "object") result.overrides = {};
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(result.baseDate || "")) result.baseDate = def.baseDate;
+        return result;
+    }catch(e){
+        return kcDefaultSettings();
+    }
+}
+function kcSaveSettings(){
+    try{
+        localStorage.setItem(KC_STORAGE_KEY,JSON.stringify(kcSettings));
+        return true;
+    }catch(e){
+        alert("Không thể lưu thiết lập khu cạo. Bộ nhớ trình duyệt có thể đã đầy.");
+        return false;
+    }
+}
+function kcDayDifference(date,baseDate){
+    const a = date.split("-").map(Number), b = baseDate.split("-").map(Number);
+    if(a.length!==3 || b.length!==3 || !a[0] || !b[0]) return 0;
+    return Math.round((Date.UTC(a[0],a[1]-1,a[2])-Date.UTC(b[0],b[1]-1,b[2]))/86400000);
+}
+function kcAutomaticArea(date,baseDate,mode){
+    if(!KC_MODES.includes(mode)) return "";
+    const length = Number(mode.slice(1));
+    const diff = kcDayDifference(date,baseDate);
+    const index = ((diff % length) + length) % length;
+    return KC_AREAS[index];
+}
+function kcOverrideKey(date,team,rowIndex){
+    return date+"|"+team+"|"+rowIndex;
+}
+function openKhuCao(){
+    returnPage = "overview";
+    kcSettings = kcLoadSettings();
+    kcSelectedDate = kcToday();
+    kcHideIncomplete = false;
+    renderKhuCao();
+}
+function kcSelectOptions(values,current){
+    return values.map(v=>`<option value="${escapeAttr(v)}" ${v===current?"selected":""}>${escapeHTML(v)}</option>`).join("");
+}
+function kcRenderTeam(team){
+    const rows = kcSettings.teams[team];
+    let html = `<div class="kc-team"><h3>ĐỘI ${team}</h3>
+      <table class="kc-table"><thead><tr><th>Nhóm</th><th>Chế độ</th><th>Khu cạo</th></tr></thead><tbody>`;
+    rows.forEach((row,i)=>{
+        const incomplete = row.group==="-" || !row.mode;
+        if(kcHideIncomplete && incomplete) return;
+        const key = kcOverrideKey(kcSelectedDate,team,i);
+        const override = Object.prototype.hasOwnProperty.call(kcSettings.overrides,key) ? kcSettings.overrides[key] : null;
+        const area = override || kcAutomaticArea(kcSelectedDate,kcSettings.baseDate,row.mode);
+        const areaText = area || "—";
+        html += `<tr>
+          <td><select class="kc-group" aria-label="Nhóm đội ${team} dòng ${i+1}" onchange="kcChangeRow('${team}',${i},'group',this.value)">
+            ${kcSelectOptions(["-",...Array.from({length:13},(_,n)=>String(n+1))],row.group)}
+          </select></td>
+          <td><select class="kc-mode" aria-label="Chế độ đội ${team} dòng ${i+1}" onchange="kcChangeRow('${team}',${i},'mode',this.value)">
+            <option value="">-</option>${kcSelectOptions(KC_MODES,row.mode)}
+          </select></td>
+          <td class="kc-area">${escapeHTML(areaText)}
+            ${override?'<span class="kc-manual">Điều chỉnh tay</span>':'<span class="kc-manual">Tự động</span>'}
+            <select aria-label="Điều chỉnh khu cạo đội ${team} dòng ${i+1}" onchange="kcSetOverride('${team}',${i},this.value)">
+              <option value="auto" ${!override?"selected":""}>Tự động</option>
+              ${kcSelectOptions(KC_AREAS,override || "")}
+            </select>
+          </td>
+        </tr>`;
+    });
+    html += `</tbody></table>${rows.every(r=>r.group==="-"||!r.mode) && kcHideIncomplete?'<div class="kc-empty">Chưa có dòng được cập nhật.</div>':""}</div>`;
+    return html;
+}
+function renderKhuCao(){
+    if(!kcSettings) kcSettings = kcLoadSettings();
+    const dateValue = kcSelectedDate || kcToday();
+    const html = `
+      <div class="full-head"><b>XEM KHU CẠO</b><button class="action gray small" onclick="closeFull()">Quay lại</button></div>
+      <div class="panel">
+        <div class="kc-toolbar">
+          <div><label for="kcDate">Ngày xem khu cạo</label><input id="kcDate" type="date" value="${escapeAttr(dateValue)}" onchange="kcChangeDate(this.value)"></div>
+          <div><button class="action green" onclick="kcGoToday()">Hôm nay</button></div>
+        </div>
+        <label class="kc-toggle"><input type="checkbox" ${kcHideIncomplete?"checked":""} onchange="kcToggleIncomplete(this.checked)"> Ẩn các dòng chưa cập nhật</label>
+        <p class="kc-note">Khu cạo tự động chạy theo ngày gốc và chế độ D3 hoặc D4. Có thể chọn khu cạo thủ công cho riêng ngày đang xem; chọn “Tự động” để trở lại chu kỳ.</p>
+        <div class="kc-teams">${kcRenderTeam("1")}${kcRenderTeam("2")}</div>
+        <details class="kc-settings">
+          <summary>ĐIỀU CHỈNH NGÀY GỐC VÀ QUY TẮC</summary>
+          <label for="kcBaseDate">Ngày gốc tính chu kỳ (ngày này bắt đầu từ khu A)</label>
+          <input id="kcBaseDate" type="date" value="${escapeAttr(kcSettings.baseDate)}">
+          <p class="kc-note">Thiết lập Nhóm và Chế độ được lưu riêng cho từng dòng của từng đội. Ngày gốc mới sẽ tính lại khu cạo tự động ở tất cả ngày chưa có điều chỉnh thủ công.</p>
+          <button class="action yellow" onclick="kcSaveBaseDate()">Lưu ngày gốc</button>
+          <button class="action gray" onclick="kcClearDateOverrides()">Xóa điều chỉnh tay của ngày đang xem</button>
+          <p class="kc-note">Ví dụ: D3 = A, B, C lặp lại; D4 = A, B, C, D lặp lại.</p>
+        </details>
+      </div>`;
+    showFull(html);
+}
+function kcChangeDate(value){
+    if(!value) return;
+    kcSelectedDate = value;
+    renderKhuCao();
+}
+function kcGoToday(){
+    kcSelectedDate = kcToday();
+    renderKhuCao();
+}
+function kcToggleIncomplete(checked){
+    kcHideIncomplete = !!checked;
+    renderKhuCao();
+}
+function kcChangeRow(team,index,field,value){
+    if(!kcSettings) kcSettings = kcLoadSettings();
+    if(field==="group"){
+        kcSettings.teams[team][index].group = value;
+    }else if(field==="mode"){
+        kcSettings.teams[team][index].mode = value;
+    }
+    kcSaveSettings();
+    renderKhuCao();
+}
+function kcSetOverride(team,index,value){
+    if(!kcSettings) kcSettings = kcLoadSettings();
+    const key = kcOverrideKey(kcSelectedDate,team,index);
+    if(value==="auto" || !KC_AREAS.includes(value)) delete kcSettings.overrides[key];
+    else kcSettings.overrides[key] = value;
+    kcSaveSettings();
+    renderKhuCao();
+}
+function kcSaveBaseDate(){
+    const input = document.getElementById("kcBaseDate");
+    if(!input || !input.value) return alert("Vui lòng chọn ngày gốc.");
+    kcSettings.baseDate = input.value;
+    if(!kcSaveSettings()) return;
+    alert("Đã lưu ngày gốc tính chu kỳ khu cạo.");
+    renderKhuCao();
+}
+function kcClearDateOverrides(){
+    if(!confirm("Xóa tất cả điều chỉnh khu cạo thủ công của ngày "+kcSelectedDate+"?")) return;
+    Object.keys(kcSettings.overrides).forEach(key=>{
+        if(key.startsWith(kcSelectedDate+"|")) delete kcSettings.overrides[key];
+    });
+    kcSaveSettings();
+    renderKhuCao();
+}
+
+
+
+/* ============================================================
+   MỞ RỘNG: QUẢN LÝ ĐỘI (TÍCH HỢP TỪ QUANLY_DOI)
+   Cơ sở dữ liệu riêng; không sử dụng hoặc sửa DB QLVC_CSKD.
+   Thay đổi lựa chọn chỉ lưu. Chỉ nút Cập nhật dữ liệu mới tính lại.
+============================================================ */
+const QDM_DB_NAME = "QLVC_CSKD_QUANLY_DOI_DATABASE_V1";
+const QDM_DB_STORE = "appdata";
+const QDM_DATA_ID = "MAIN_DATA";
+const QDM_LETTERS = ["A","B","C","D","E"];
+let qdmDB = null;
+let qdmState = null;
+let qdmSaveQueue = Promise.resolve();
+let qdmAdjustVisible = false;
+let qdmNeedsUpdate = false;
+let qdmHadSavedData = false;
+
+function qdmToday(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function qdmDefaultState(){
+  const makeRows=()=>Array.from({length:13},()=>({group:"",cd:"",result:""}));
+  return {
+    settings:{viewMode:"today",customDate:qdmToday(),baseDate:"2026-10-29",
+      khuD3D1:"A",khuD4D1:"A",
+      khuD3D2:"A",khuD4D2:"A"},
+    team1:makeRows(),team2:makeRows(),hideEmpty1:false,hideEmpty2:false
+  };
+}
+function qdmNormalizeState(data){
+  const def=qdmDefaultState();
+  if(!data || typeof data!=="object") return def;
+  const out={...def,...data,settings:{...def.settings,...(data.settings||{})}};
+  ["team1","team2"].forEach(k=>{
+    const rows=Array.isArray(data[k])?data[k]:[];
+    out[k]=Array.from({length:13},(_,i)=>{
+      const r=rows[i]||{};
+      return {group:String(r.group??""),cd:["D3","D4"].includes(r.cd)?r.cd:"",result:String(r.result??"")};
+    });
+  });
+  out.hideEmpty1=!!out.hideEmpty1;out.hideEmpty2=!!out.hideEmpty2;
+  return out;
+}
+function qdmOpenDB(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(QDM_DB_NAME,1);
+    req.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(QDM_DB_STORE))d.createObjectStore(QDM_DB_STORE,{keyPath:"id"});};
+    req.onsuccess=e=>{qdmDB=e.target.result;resolve(qdmDB);};
+    req.onerror=()=>reject(req.error);
+  });
+}
+function qdmReadDB(){
+  return new Promise((resolve,reject)=>{
+    const tx=qdmDB.transaction(QDM_DB_STORE,"readonly");
+    const req=tx.objectStore(QDM_DB_STORE).get(QDM_DATA_ID);
+    req.onsuccess=()=>resolve(req.result?.data||null);
+    req.onerror=()=>reject(req.error);
+  });
+}
+function qdmWriteDB(data){
+  return new Promise((resolve,reject)=>{
+    const tx=qdmDB.transaction(QDM_DB_STORE,"readwrite");
+    tx.objectStore(QDM_DB_STORE).put({id:QDM_DATA_ID,data,savedAt:new Date().toISOString()});
+    tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error("Không thể lưu dữ liệu."));
+  });
+}
+function qdmSave(showMessage=false){
+  if(!qdmDB||!qdmState)return Promise.resolve(false);
+  const snapshot=JSON.parse(JSON.stringify(qdmState));
+  qdmSaveQueue=qdmSaveQueue.catch(()=>{}).then(()=>qdmWriteDB(snapshot));
+  return qdmSaveQueue.then(()=>{
+    const el=document.getElementById("qdmStatus");
+    if(el)el.textContent="Đã lưu dữ liệu khu cạo: "+new Date().toLocaleString("vi-VN");
+    if(showMessage)alert("Đã lưu dữ liệu khu cạo.");
+    return true;
+  }).catch(err=>{
+    const el=document.getElementById("qdmStatus");if(el)el.textContent="Lỗi lưu dữ liệu: "+err.message;
+    if(showMessage)alert("Không lưu được dữ liệu khu cạo: "+err.message);
+    return false;
+  });
+}
+async function qdmOpen(){
+  try{
+    if(!qdmDB)await qdmOpenDB();
+    const saved=await qdmReadDB();
+    qdmHadSavedData=!!saved;
+    qdmState=qdmNormalizeState(saved);
+    qdmAdjustVisible=false;
+    const today=qdmToday();
+    if(qdmState.settings.viewMode==="today" && qdmState.lastCalculatedDate!==today){
+      await qdmCalculateAndSave(today,false);
+    }
+    qdmRender();
+  }catch(err){
+    const host=document.getElementById("qdmOverview");
+    if(host)host.innerHTML='<p class="note">Không mở được dữ liệu khu cạo: '+escapeHTML(err.message)+'</p>';
+  }
+}
+function qdmToggleOverview(){
+  const box=document.getElementById("qdmOverview"),btn=document.getElementById("qdmDataToggle");
+  if(!box||!btn)return;
+  const show=box.classList.contains("hidden");
+  if(show){
+    const data=document.getElementById("overviewDataContent"),dataBtn=document.getElementById("overviewDataToggle");
+    if(data){data.classList.add("hidden");data.classList.remove("overview-expanded");}
+    document.body.classList.remove("overview-data-open");
+    if(dataBtn)dataBtn.textContent="Hiển thị DL";
+  }
+  box.classList.toggle("hidden",!show);
+  box.classList.toggle("overview-expanded",show);
+  document.body.classList.toggle("overview-qdm-open",show);
+  btn.textContent=show?"Ẩn khu cạo":"Hiển thị khu cạo";
+  if(show)qdmRender();
+}
+function qdmDateNumber(s){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(s||""))return NaN;
+  const [y,m,d]=s.split("-").map(Number);
+  return Math.floor(Date.UTC(y,m-1,d)/86400000);
+}
+function qdmSelectedDate(){
+  return qdmState.settings.viewMode==="custom"?qdmState.settings.customDate:qdmToday();
+}
+function qdmCycleChar(diffDay,cycleLen,startChar){
+  if(diffDay<0||!Number.isFinite(diffDay))return "";
+  const startIndex=QDM_LETTERS.indexOf(startChar);
+  const safeIndex=startIndex>=0?startIndex:0;
+  return QDM_LETTERS[((safeIndex+diffDay)%cycleLen+cycleLen)%cycleLen];
+}
+function qdmResult(cd,team,dateNumber,baseNumber){
+  const diff=dateNumber-baseNumber;
+  if(diff<0)return "Chưa đến chu kỳ";
+  const suffix=team==="1"?"D1":"D2";
+  const start=qdmState.settings["khu"+cd+suffix]||"A";
+  return qdmCycleChar(diff,Number(cd.slice(1)),start);
+}
+function qdmSaveSettingsField(id,value){
+  qdmState.settings[id]=value;
+  qdmNeedsUpdate=true;
+  qdmSave(false);
+  const b=document.getElementById("qdmUpdateButton");if(b)b.disabled=false;
+}
+function qdmChangeRow(team,index,field,value){
+  const key=team==="1"?"team1":"team2";
+  if(!qdmState||!qdmState[key]||!qdmState[key][index])return;
+  qdmState[key][index][field]=value;
+  qdmNeedsUpdate=true;
+  qdmSave(false);
+  const b=document.getElementById("qdmUpdateButton");if(b)b.disabled=false;
+}
+function qdmToggleAdjust(){
+  qdmAdjustVisible=!qdmAdjustVisible;
+  const p=document.getElementById("qdmAdjustPanel");
+  const b=document.getElementById("qdmAdjustButton");
+  if(p)p.classList.toggle("hidden",!qdmAdjustVisible);
+  if(b)b.textContent=qdmAdjustVisible?"Ẩn chỉnh sửa":"Hiện chỉnh sửa";
+}
+function qdmToggleEmpty(team){
+  const key=team==="1"?"hideEmpty1":"hideEmpty2";
+  qdmState[key]=!qdmState[key];
+  qdmRender();
+  qdmSave(false);
+}
+function qdmRenderTeam(team){
+  const key=team==="1"?"team1":"team2";
+  const hide=team==="1"?qdmState.hideEmpty1:qdmState.hideEmpty2;
+  const rows=qdmState[key];
+  let html=`<section class="qdm-team"><h3>ĐỘI ${team}</h3><div class="qdm-team-inner">
+    <div class="qdm-team-actions"><button class="action gray" onclick="qdmToggleEmpty('${team}')">${hide?"Hiện dòng trống":"Ẩn dòng trống"}</button></div>
+    <table class="qdm-table"><thead><tr><th>Nhóm</th><th>CD</th><th>Khu cạo</th></tr></thead><tbody>`;
+  rows.forEach((r,i)=>{
+    const empty=!r.group||r.group==="-"||!r.cd;
+    const hidden=hide&&empty?"qdm-hidden-row":"";
+    html+=`<tr class="${hidden}">
+      <td><select aria-label="Nhóm đội ${team} dòng ${i+1}" onchange="qdmChangeRow('${team}',${i},'group',this.value)">
+        <option value="" ${r.group===""?"selected":""}>--</option><option value="-" ${r.group==="-"?"selected":""}>-</option>
+        ${Array.from({length:13},(_,n)=>`<option value="${n+1}" ${r.group===String(n+1)?"selected":""}>${n+1}</option>`).join("")}
+      </select></td>
+      <td><select aria-label="Chế độ đội ${team} dòng ${i+1}" onchange="qdmChangeRow('${team}',${i},'cd',this.value)">
+        <option value="" ${!r.cd?"selected":""}>--</option>${["D3","D4"].map(v=>`<option value="${v}" ${r.cd===v?"selected":""}>${v}</option>`).join("")}
+      </select></td><td class="qdm-result">${escapeHTML(r.result||"")}</td></tr>`;
+  });
+  html+=`</tbody></table></div></section>`;
+  return html;
+}
+function qdmRender(){
+  if(!qdmState)qdmState=qdmDefaultState();
+  const s=qdmState.settings;
+  const startSelect=(id,label)=>`<div class="qdm-field"><label for="${id}">${label}</label><select id="${id}" onchange="qdmSaveSettingsField('${id}',this.value)">${QDM_LETTERS.map(v=>`<option value="${v}" ${s[id]===v?"selected":""}>${v}</option>`).join("")}</select></div>`;
+  const html=`<div class="qdm-wrap">
+      <div class="qdm-status" id="qdmStatus">${qdmHadSavedData?"Đã khôi phục dữ liệu đã lưu; tự cập nhật khi sang ngày mới.":"Chưa có dữ liệu khu cạo được lưu. Nhập dữ liệu để bắt đầu."}</div>
+      <div class="qdm-toolbar">
+        <button class="action yellow" id="qdmAdjustButton" onclick="qdmToggleAdjust()">Ẩn chỉnh sửa</button>
+        <button class="action green" id="qdmUpdateButton" onclick="qdmUpdateAll()" ${qdmNeedsUpdate?"":"disabled"}>Cập nhật dữ liệu</button>
+        <button class="action purple" onclick="qdmSave(true)">Lưu dữ liệu</button>
+      </div>
+      <section class="qdm-settings" id="qdmAdjustPanel">
+        <h3>THIẾT LẬP NGÀY VÀ CHU KỲ</h3>
+        <div class="qdm-settings-grid">
+          <div class="qdm-field"><label for="qdmViewMode">Chế độ ngày</label><select id="qdmViewMode" onchange="qdmSaveSettingsField('viewMode',this.value);qdmRender()"><option value="today" ${s.viewMode==="today"?"selected":""}>Ngày hiện tại</option><option value="custom" ${s.viewMode==="custom"?"selected":""}>Chọn ngày</option></select></div>
+          <div class="qdm-field"><label for="qdmCustomDate">Ngày chọn</label><input id="qdmCustomDate" type="date" value="${escapeAttr(s.customDate||qdmToday())}" ${s.viewMode!=="custom"?"disabled":""} onchange="qdmSaveSettingsField('customDate',this.value)"></div>
+          <div class="qdm-field"><label for="qdmBaseDate">Ngày gốc chu kỳ</label><input id="qdmBaseDate" type="date" value="${escapeAttr(s.baseDate)}" onchange="qdmSaveSettingsField('baseDate',this.value)"></div>
+        </div>
+        <div class="qdm-settings-grid qdm-cycle-grid">
+          ${startSelect("khuD3D1","Đội 1 - D3 bắt đầu")}${startSelect("khuD4D1","Đội 1 - D4 bắt đầu")}
+          ${startSelect("khuD3D2","Đội 2 - D3 bắt đầu")}${startSelect("khuD4D2","Đội 2 - D4 bắt đầu")}
+        </div>
+        <p class="qdm-note">Thay đổi thiết lập được lưu ngay. Nút “Cập nhật dữ liệu” chỉ hoạt động khi có thay đổi mới; ngày mới sẽ tự cập nhật.</p>
+      </section>
+      <p class="qdm-note">Mỗi đội gồm 13 dòng. Chế độ cạo chỉ sử dụng D3 và D4; các lựa chọn D2, D5 đã được loại bỏ.</p>
+      <div class="qdm-team-grid">${qdmRenderTeam("1")}${qdmRenderTeam("2")}</div>
+      <div class="qdm-adjust-buttons"><button class="action green" onclick="qdmUpdateAll()" ${qdmNeedsUpdate?"":"disabled"}>Cập nhật dữ liệu</button><button class="action purple" onclick="qdmSave(true)">Lưu dữ liệu</button></div>
+      <p class="qdm-note">Dữ liệu khu cạo được lưu trong cơ sở dữ liệu riêng, tách biệt với dữ liệu Excel. Ứng dụng tự cập nhật khi sang ngày mới; cập nhật thủ công chỉ dùng khi có thay đổi thiết lập hoặc dữ liệu.</p>
+    </div>`;
+  const host=document.getElementById("qdmOverview");
+  if(host) host.innerHTML=html;
+  if(!qdmAdjustVisible){const panel=document.getElementById("qdmAdjustPanel");const button=document.getElementById("qdmAdjustButton");if(panel)panel.classList.add("hidden");if(button)button.textContent="Hiện chỉnh sửa";}
+}
+async function qdmCalculateAndSave(date,showMessage=false){
+  const base=qdmState.settings.baseDate;
+  if(!date||!base)return false;
+  const dn=qdmDateNumber(date),bn=qdmDateNumber(base);
+  if(!Number.isFinite(dn)||!Number.isFinite(bn)||dn<bn)return false;
+  ["1","2"].forEach(team=>{
+    const key=team==="1"?"team1":"team2";
+    qdmState[key].forEach(r=>{r.result=(!r.group||r.group==="-"||!r.cd)?"":qdmResult(r.cd,team,dn,bn);});
+  });
+  qdmState.lastCalculatedDate=date;
+  const saved=await qdmSave(false);
+  qdmNeedsUpdate=false;
+  if(showMessage)alert(saved?"Đã cập nhật kết quả theo ngày "+date+".":"Đã tính kết quả nhưng chưa lưu được.");
+  return saved;
+}
+async function qdmUpdateAll(){
+  if(!qdmNeedsUpdate)return alert("Chưa có thay đổi mới cần cập nhật.");
+  const date=qdmSelectedDate();
+  const ok=await qdmCalculateAndSave(date,false);
+  if(!ok)return alert("Vui lòng kiểm tra ngày và ngày gốc chu kỳ.");
+  qdmAdjustVisible=false;qdmRender();
+  const status=document.getElementById("qdmStatus");if(status)status.textContent="Đã cập nhật kết quả theo ngày "+date+" và lưu dữ liệu.";
+}
+
+
+async function qdmCheckNewDay(){
+  if(!qdmState||qdmState.settings.viewMode!=="today"||qdmState.lastCalculatedDate===qdmToday())return;
+  const ok=await qdmCalculateAndSave(qdmToday(),false);
+  if(ok&&document.getElementById("qdmOverview"))qdmRender();
+}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")qdmCheckNewDay();});
+setInterval(qdmCheckNewDay,60000);
+
+/* =========================
+   KHỞI ĐỘNG
+========================= */
+(async function(){
+  try{
+    await openDB();
+    returnPage = "overview";
+    restoreOverviewDataVisibility();
+    const qdmBox=document.getElementById("qdmOverview");if(qdmBox)qdmBox.classList.add("hidden");
+    const qdmBtn=document.getElementById("qdmDataToggle");if(qdmBtn)qdmBtn.textContent="Hiện dữ liệu khu cạo";
+    await refreshOverview();
+    try{
+      await qdmOpen();
+    }catch(qdmError){
+      const host=document.getElementById("qdmOverview");
+      if(host) host.innerHTML='<p class="note">Không tải được dữ liệu khu cạo: '+escapeHTML(qdmError.message)+'</p>';
+    }
+  }catch(e){
+    alert("Không thể khởi tạo cơ sở dữ liệu: " + e.message);
+  }
+})();
+</script>
+<script>restoreInstructionHelpVisibility();</script>
+</body>
+</html>
